@@ -3,64 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Krick's Weather · 城市景色</title>
+<meta name="description" content="Krick's Weather 是一张城市天气明信片，手机打开即可搜索城市、查看实时天气、七日趋势、出行提醒和代表景色。">
+<meta name="theme-color" content="#e7eef0">
+<meta name="format-detection" content="telephone=no">
+<meta property="og:title" content="Krick's Weather · 城市天气明信片">
+<meta property="og:description" content="搜索一座城，看见它的天气、趋势、出行提醒和代表景色。">
+<meta property="og:type" content="website">
+<title>Krick's Weather · 城市天气明信片</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; }
 
   :root {
-    --ink: #1f252b;
-    --muted: rgba(31, 37, 43, 0.62);
-    --paper: rgba(255, 255, 255, 0.76);
-    --paper-strong: rgba(255, 255, 255, 0.9);
-    --line: rgba(255, 255, 255, 0.45);
-    --shadow: 0 24px 72px rgba(31, 37, 43, 0.20);
-    --accent: #ff6f61;
-    --accent-2: #51b6a8;
+    --ink: #182027;
+    --ink-soft: rgba(24, 32, 39, 0.68);
+    --ink-faint: rgba(24, 32, 39, 0.48);
+    --surface: rgba(255, 255, 255, 0.78);
+    --surface-strong: rgba(255, 255, 255, 0.94);
+    --line: rgba(24, 32, 39, 0.10);
+    --glass-line: rgba(255, 255, 255, 0.62);
+    --coral: #ec705c;
+    --teal: #2f9f93;
+    --saffron: #e1a337;
+    --sky: #5a8fd8;
+    --plum: #6d5aa8;
+    --shadow: 0 24px 70px rgba(25, 35, 44, 0.16);
   }
+
+  html { scroll-behavior: smooth; }
 
   body {
     min-height: 100vh;
-    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
     color: var(--ink);
-    background: #e9eff1;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.66) 0%, rgba(225, 239, 239, 0.88) 34%, rgba(252, 241, 224, 0.88) 100%),
+      repeating-linear-gradient(90deg, rgba(24, 32, 39, 0.025) 0 1px, transparent 1px 84px),
+      repeating-linear-gradient(0deg, rgba(24, 32, 39, 0.022) 0 1px, transparent 1px 84px),
+      #e7eef0;
     overflow-x: hidden;
   }
 
-  .scene,
-  .scene::before,
-  .scene::after {
+  button,
+  input {
+    font: inherit;
+  }
+
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .backdrop {
     position: fixed;
     inset: 0;
+    z-index: -3;
+    overflow: hidden;
     pointer-events: none;
   }
 
-  .scene { z-index: -4; background: linear-gradient(145deg, #e8eef0 0%, #f9ede6 50%, #d9edf0 100%); }
-  .scene::before {
+  .backdrop::before {
     content: "";
-    z-index: -3;
+    position: absolute;
+    inset: 0;
     background-image: var(--place-image);
     background-size: cover;
     background-position: center;
-    opacity: var(--image-opacity, 0);
-    transform: scale(1.02);
-    transition: opacity 900ms ease, transform 1200ms ease;
+    opacity: var(--place-opacity, 0);
+    transform: scale(1.04);
+    filter: saturate(1.03);
+    transition: opacity 850ms ease, transform 1200ms ease;
   }
-  .scene::after {
+
+  .backdrop::after {
     content: "";
-    z-index: -2;
+    position: absolute;
+    inset: 0;
     background:
-      linear-gradient(180deg, rgba(255,255,255,0.52) 0%, rgba(255,255,255,0.18) 42%, rgba(255,255,255,0.74) 100%),
-      radial-gradient(circle at 12% 12%, rgba(255,111,97,0.22), transparent 34%),
-      radial-gradient(circle at 88% 18%, rgba(81,182,168,0.20), transparent 30%);
-    backdrop-filter: blur(2px) saturate(1.05);
+      linear-gradient(180deg, rgba(248, 251, 250, 0.78) 0%, rgba(248, 251, 250, 0.38) 42%, rgba(248, 251, 250, 0.86) 100%),
+      linear-gradient(125deg, rgba(47, 159, 147, 0.15), transparent 40%, rgba(236, 112, 92, 0.16));
+    backdrop-filter: blur(2px) saturate(1.08);
   }
 
   .shell {
-    width: min(1180px, calc(100% - 28px));
-    margin: 0 auto;
+    width: min(1180px, calc(100% - 32px));
     min-height: 100vh;
-    padding: 28px 0 38px;
+    margin: 0 auto;
+    padding: 26px 0 40px;
     display: grid;
+    grid-template-rows: auto 1fr;
     gap: 24px;
   }
 
@@ -72,41 +102,71 @@
   }
 
   .brand {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 12px;
     min-width: 0;
   }
 
   .brand-mark {
-    width: 38px;
-    height: 38px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, var(--accent), #ffc3a0 48%, var(--accent-2));
-    box-shadow: 0 10px 28px rgba(255,111,97,0.25);
+    width: 42px;
+    height: 42px;
     flex: 0 0 auto;
+    border-radius: 14px;
+    background:
+      linear-gradient(150deg, var(--coral), #f4c66d 48%, var(--teal));
+    box-shadow: 0 14px 30px rgba(236, 112, 92, 0.25);
+    position: relative;
+    overflow: hidden;
   }
 
-  .brand h1 {
-    font-size: clamp(20px, 3vw, 32px);
-    line-height: 1.05;
-    font-weight: 780;
+  .brand-mark::after {
+    content: "";
+    position: absolute;
+    left: 9px;
+    right: 9px;
+    bottom: 10px;
+    height: 5px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.76);
+    box-shadow: 0 -9px 0 rgba(255, 255, 255, 0.42);
+  }
+
+  .brand-title {
+    margin: 0;
+    font-size: clamp(21px, 3vw, 32px);
+    line-height: 1;
+    font-weight: 840;
     letter-spacing: 0;
   }
 
-  .brand p {
-    margin-top: 4px;
-    color: var(--muted);
+  .brand-subtitle {
+    margin-top: 5px;
+    color: var(--ink-soft);
     font-size: 13px;
   }
 
-  .time-pill {
-    padding: 10px 15px;
+  .top-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .time-chip,
+  .back-btn {
+    min-height: 40px;
+    border: 1px solid var(--glass-line);
+    background: rgba(255, 255, 255, 0.58);
+    color: var(--ink-soft);
+    box-shadow: 0 12px 30px rgba(24, 32, 39, 0.08);
+    backdrop-filter: blur(18px);
+  }
+
+  .time-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 14px;
     border-radius: 999px;
-    background: rgba(255,255,255,0.50);
-    border: 1px solid rgba(255,255,255,0.60);
-    backdrop-filter: blur(20px);
-    color: rgba(31,37,43,0.70);
     font-size: 13px;
     white-space: nowrap;
   }
@@ -115,144 +175,175 @@
     display: none;
     align-items: center;
     gap: 8px;
-    border: 0;
-    background: rgba(255,255,255,0.60);
-    border: 1px solid rgba(255,255,255,0.56);
-    color: var(--ink);
-    border-radius: 999px;
-    padding: 10px 14px;
+    padding: 0 13px;
+    border-radius: 14px;
     cursor: pointer;
-    backdrop-filter: blur(18px);
-    box-shadow: 0 10px 30px rgba(31,37,43,0.08);
   }
 
   .back-btn.visible { display: inline-flex; }
+
+  .back-btn:hover,
+  .ghost-btn:hover,
+  .primary-btn:hover,
+  .chip-btn:hover,
+  .suggestion:hover {
+    transform: translateY(-1px);
+  }
 
   .view { display: none; }
   .view.active { display: block; }
 
   .search-view {
     align-self: center;
+    min-height: calc(100vh - 128px);
     display: grid;
-    place-items: center;
-    min-height: calc(100vh - 120px);
+    align-items: center;
   }
 
-  .search-hero {
-    width: min(860px, 100%);
-    padding: clamp(26px, 5vw, 48px);
-    border-radius: 34px;
-    background: linear-gradient(145deg, rgba(255,255,255,0.78), rgba(255,255,255,0.48));
-    border: 1px solid var(--line);
+  .search-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(300px, 0.72fr);
+    gap: clamp(18px, 4vw, 34px);
+    align-items: stretch;
+  }
+
+  .search-panel,
+  .weather-lens,
+  .panel,
+  .hero-card {
+    border: 1px solid var(--glass-line);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.58));
     box-shadow: var(--shadow);
-    backdrop-filter: blur(28px) saturate(1.18);
+    backdrop-filter: blur(26px) saturate(1.12);
+  }
+
+  .search-panel {
+    min-height: 560px;
+    padding: clamp(28px, 5vw, 54px);
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .eyebrow {
-    color: rgba(31,37,43,0.54);
+    margin: 0 0 16px;
+    color: var(--teal);
     font-size: 12px;
-    font-weight: 720;
+    font-weight: 820;
     letter-spacing: 2px;
     text-transform: uppercase;
   }
 
   .hero-title {
-    max-width: 720px;
-    margin-top: 14px;
-    font-size: clamp(42px, 7vw, 86px);
-    line-height: 0.92;
+    max-width: 760px;
+    margin: 0;
+    font-size: clamp(42px, 7vw, 88px);
+    line-height: 0.94;
     letter-spacing: 0;
-    font-weight: 820;
+    font-weight: 860;
   }
-  .hero-title span { color: var(--accent); }
+
+  .hero-title span {
+    color: var(--coral);
+  }
 
   .hero-copy {
     max-width: 640px;
-    margin: 22px 0 28px;
-    color: var(--muted);
+    margin: 22px 0 30px;
+    color: var(--ink-soft);
     font-size: 16px;
-    line-height: 1.75;
+    line-height: 1.78;
   }
 
-  .search-wrap { position: relative; max-width: 720px; }
+  .search-wrap {
+    position: relative;
+    width: min(720px, 100%);
+  }
 
   .search-box {
     display: grid;
-    grid-template-columns: 42px 1fr auto auto;
+    grid-template-columns: 46px minmax(0, 1fr) 44px 116px;
     align-items: center;
-    gap: 0;
-    min-height: 66px;
-    padding: 7px 8px 7px 14px;
-    border-radius: 24px;
+    gap: 8px;
+    min-height: 68px;
+    padding: 8px;
+    border-radius: 22px;
     background:
-      linear-gradient(var(--paper-strong), var(--paper-strong)) padding-box,
-      linear-gradient(120deg, rgba(255,111,97,0.80), rgba(81,182,168,0.72), rgba(255,255,255,0.64)) border-box;
+      linear-gradient(var(--surface-strong), var(--surface-strong)) padding-box,
+      linear-gradient(110deg, rgba(236, 112, 92, 0.84), rgba(47, 159, 147, 0.76), rgba(90, 143, 216, 0.56)) border-box;
     border: 1px solid transparent;
-    box-shadow: 0 18px 46px rgba(31,37,43,0.14);
-    transition: transform 220ms ease, box-shadow 220ms ease;
-  }
-  .search-box:focus-within {
-    transform: translateY(-2px);
-    box-shadow: 0 26px 64px rgba(31,37,43,0.18);
+    box-shadow: 0 18px 45px rgba(24, 32, 39, 0.13);
+    transition: transform 180ms ease, box-shadow 180ms ease;
   }
 
-  .search-icon {
+  .search-box:focus-within {
+    transform: translateY(-2px);
+    box-shadow: 0 28px 62px rgba(24, 32, 39, 0.18);
+  }
+
+  .search-symbol {
+    width: 44px;
+    height: 44px;
     display: grid;
     place-items: center;
-    width: 38px;
-    height: 38px;
     border-radius: 15px;
-    background: rgba(81,182,168,0.12);
-    color: #2f8f84;
-    flex: 0 0 auto;
+    background: rgba(47, 159, 147, 0.12);
+    color: #237f76;
+    font-size: 22px;
   }
 
   .search-input {
-    min-width: 0;
     width: 100%;
+    min-width: 0;
     border: 0;
     outline: 0;
     background: transparent;
     color: var(--ink);
     font-size: 17px;
-    padding: 0 12px;
+    padding: 0 4px;
   }
-  .search-input::placeholder { color: rgba(31,37,43,0.38); }
 
-  .icon-btn,
+  .search-input::placeholder {
+    color: rgba(24, 32, 39, 0.40);
+  }
+
+  .ghost-btn,
   .primary-btn,
-  .mini-btn,
+  .chip-btn,
   .suggestion {
     border: 0;
     cursor: pointer;
+    transition: transform 160ms ease, background 160ms ease, opacity 160ms ease, color 160ms ease;
   }
 
-  .icon-btn {
-    width: 42px;
-    height: 42px;
-    border-radius: 16px;
-    background: rgba(31,37,43,0.06);
-    color: rgba(31,37,43,0.64);
-    font-size: 18px;
+  .ghost-btn {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 15px;
+    background: rgba(24, 32, 39, 0.06);
+    color: var(--ink-soft);
+    font-size: 19px;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 180ms ease, transform 180ms ease, background 180ms ease;
   }
-  .icon-btn.visible { opacity: 1; pointer-events: auto; }
-  .icon-btn:hover,
-  .primary-btn:hover,
-  .mini-btn:hover { transform: translateY(-1px); }
+
+  .ghost-btn.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
 
   .primary-btn {
     height: 50px;
-    padding: 0 20px;
-    border-radius: 18px;
-    background: #1f252b;
+    border-radius: 16px;
+    background: var(--ink);
     color: #fff;
-    font-weight: 720;
     font-size: 14px;
+    font-weight: 800;
     white-space: nowrap;
-    transition: transform 180ms ease, opacity 180ms ease;
+    box-shadow: 0 12px 30px rgba(24, 32, 39, 0.22);
   }
 
   .suggestions {
@@ -260,35 +351,39 @@
     top: calc(100% + 12px);
     left: 0;
     right: 0;
-    z-index: 30;
+    z-index: 20;
     display: none;
-    max-height: 340px;
+    max-height: 330px;
     overflow: auto;
     border-radius: 22px;
-    background: rgba(255,255,255,0.90);
-    border: 1px solid rgba(255,255,255,0.64);
-    box-shadow: 0 24px 72px rgba(31,37,43,0.18);
-    backdrop-filter: blur(26px);
+    border: 1px solid var(--glass-line);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 24px 58px rgba(24, 32, 39, 0.17);
+    backdrop-filter: blur(24px);
   }
+
   .suggestions.show { display: block; }
 
   .suggestion {
     width: 100%;
+    min-height: 62px;
+    padding: 13px 16px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     gap: 14px;
-    padding: 15px 18px;
-    background: transparent;
     color: var(--ink);
+    background: transparent;
     text-align: left;
-    border-bottom: 1px solid rgba(31,37,43,0.06);
+    border-bottom: 1px solid rgba(24, 32, 39, 0.07);
   }
-  .suggestion:hover,
-  .suggestion.active { background: rgba(81,182,168,0.12); }
+
+  .suggestion:last-child { border-bottom: 0; }
+  .suggestion.active,
+  .suggestion:hover { background: rgba(47, 159, 147, 0.11); }
   .suggestion strong { display: block; font-size: 15px; }
-  .suggestion span { display: block; margin-top: 3px; color: rgba(31,37,43,0.48); font-size: 12px; }
-  .suggestion small { color: rgba(31,37,43,0.42); white-space: nowrap; }
+  .suggestion span span { display: block; margin-top: 4px; color: var(--ink-faint); font-size: 12px; }
+  .suggestion small { color: rgba(24, 32, 39, 0.42); white-space: nowrap; }
 
   .quick-row {
     display: flex;
@@ -297,35 +392,151 @@
     margin-top: 18px;
   }
 
-  .mini-btn {
+  .chip-btn {
+    min-height: 36px;
+    padding: 0 14px;
     border-radius: 999px;
-    padding: 9px 14px;
-    background: rgba(255,255,255,0.48);
-    border: 1px solid rgba(31,37,43,0.08);
-    color: rgba(31,37,43,0.68);
-    backdrop-filter: blur(18px);
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid rgba(24, 32, 39, 0.08);
+    color: var(--ink-soft);
+    font-size: 14px;
   }
 
-  .detail-view { padding-bottom: 10px; }
+  .chip-btn:hover {
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.9);
+  }
 
-  .detail-shell {
+  .weather-lens {
+    min-height: 560px;
+    border-radius: 30px;
+    padding: 24px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 18px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .lens-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .lens-label {
+    color: var(--ink-faint);
+    font-size: 12px;
+    font-weight: 760;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+  }
+
+  .pulse-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--teal);
+    box-shadow: 0 0 0 8px rgba(47, 159, 147, 0.12);
+  }
+
+  .lens-map {
+    border-radius: 24px;
+    border: 1px solid rgba(24, 32, 39, 0.08);
+    background:
+      linear-gradient(150deg, rgba(47, 159, 147, 0.16), rgba(90, 143, 216, 0.13) 45%, rgba(236, 112, 92, 0.13)),
+      repeating-linear-gradient(35deg, rgba(255, 255, 255, 0.36) 0 2px, transparent 2px 18px);
+    display: grid;
+    align-content: end;
+    padding: 20px;
+    min-height: 280px;
+  }
+
+  .lens-temp {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+  }
+
+  .lens-temp strong {
+    font-size: 86px;
+    line-height: 0.84;
+    letter-spacing: 0;
+  }
+
+  .lens-temp span {
+    padding-bottom: 8px;
+    color: var(--ink-soft);
+    font-weight: 760;
+  }
+
+  .lens-caption {
+    margin: 14px 0 0;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+
+  .city-strip {
+    display: grid;
+    gap: 10px;
+  }
+
+  .city-tile {
+    min-height: 58px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.58);
+    border: 1px solid rgba(255, 255, 255, 0.52);
+  }
+
+  .city-tile i {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(225, 163, 55, 0.18);
+    color: #9d6a11;
+    font-style: normal;
+  }
+
+  .city-tile strong {
+    display: block;
+    font-size: 14px;
+  }
+
+  .city-tile span {
+    display: block;
+    margin-top: 3px;
+    color: var(--ink-faint);
+    font-size: 12px;
+  }
+
+  .detail-view {
+    padding-bottom: 8px;
+  }
+
+  .detail-stack {
     display: grid;
     gap: 18px;
   }
 
-  .detail-hero {
+  .hero-card {
     position: relative;
-    min-height: 420px;
-    border-radius: 34px;
+    min-height: 430px;
+    border-radius: 30px;
     overflow: hidden;
     background:
-      linear-gradient(180deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.36) 100%),
-      rgba(255,255,255,0.20);
-    border: 1px solid rgba(255,255,255,0.28);
-    box-shadow: var(--shadow);
+      linear-gradient(145deg, rgba(34, 45, 54, 0.18), rgba(34, 45, 54, 0.46)),
+      linear-gradient(135deg, rgba(47, 159, 147, 0.28), rgba(90, 143, 216, 0.20));
   }
 
-  .detail-hero::before {
+  .hero-card::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -333,212 +544,313 @@
     background-size: cover;
     background-position: center;
     opacity: var(--hero-opacity, 0);
-    transform: scale(1.02);
-    transition: opacity 900ms ease;
+    transform: scale(1.03);
+    transition: opacity 850ms ease;
   }
 
-  .detail-hero::after {
+  .hero-card::after {
     content: "";
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(180deg, rgba(20,24,26,0.08) 0%, rgba(20,24,26,0.24) 35%, rgba(20,24,26,0.68) 100%);
+      linear-gradient(180deg, rgba(14, 18, 22, 0.04) 0%, rgba(14, 18, 22, 0.24) 42%, rgba(14, 18, 22, 0.74) 100%);
   }
 
-  .detail-hero-content {
+  .hero-content {
     position: absolute;
-    inset: auto 0 0 0;
+    inset: auto 0 0;
     z-index: 1;
-    padding: 28px;
+    padding: clamp(22px, 4vw, 34px);
     color: #fff;
   }
 
-  .place-line {
+  .hero-kicker {
     display: flex;
     align-items: center;
-    gap: 10px;
     flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 11px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: rgba(255, 255, 255, 0.90);
+    backdrop-filter: blur(14px);
+    font-size: 12px;
+    font-weight: 720;
   }
 
   .place-title {
-    font-size: clamp(32px, 6vw, 68px);
-    line-height: 0.95;
-    font-weight: 820;
+    margin: 0;
+    font-size: clamp(42px, 8vw, 86px);
+    line-height: 0.9;
     letter-spacing: 0;
-  }
-
-  .place-tag,
-  .place-note {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 12px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.16);
-    border: 1px solid rgba(255,255,255,0.20);
-    backdrop-filter: blur(14px);
-    color: rgba(255,255,255,0.92);
-    font-size: 12px;
-    white-space: nowrap;
+    font-weight: 880;
   }
 
   .place-copy {
-    max-width: 720px;
-    margin-top: 12px;
-    color: rgba(255,255,255,0.82);
-    line-height: 1.75;
+    max-width: 760px;
+    margin: 16px 0 0;
+    color: rgba(255, 255, 255, 0.84);
+    line-height: 1.72;
     font-size: 15px;
   }
 
   .detail-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.6fr);
+    grid-template-columns: minmax(0, 1.34fr) minmax(320px, 0.66fr);
     gap: 18px;
+  }
+
+  .main-column,
+  .side-column {
+    display: grid;
+    gap: 18px;
+    align-content: start;
   }
 
   .panel {
-    border-radius: 28px;
-    background: rgba(255,255,255,0.66);
-    border: 1px solid rgba(255,255,255,0.44);
-    box-shadow: 0 18px 48px rgba(31,37,43,0.10);
-    backdrop-filter: blur(28px) saturate(1.12);
+    border-radius: 26px;
+    padding: clamp(18px, 3vw, 26px);
   }
 
-  .weather-panel {
-    padding: 24px;
+  .current-panel {
     display: grid;
-    gap: 18px;
+    gap: 20px;
   }
 
-  .weather-top {
+  .panel-head {
     display: flex;
-    justify-content: space-between;
     align-items: flex-start;
-    gap: 18px;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ink-faint);
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    font-weight: 820;
   }
 
   .location-name {
-    font-size: 28px;
+    margin: 8px 0 0;
+    font-size: clamp(24px, 4vw, 34px);
     line-height: 1.08;
-    font-weight: 780;
+    font-weight: 820;
   }
 
   .location-meta {
-    margin-top: 8px;
-    color: var(--muted);
+    margin-top: 7px;
+    color: var(--ink-faint);
     font-size: 13px;
   }
 
   .weather-badge {
-    padding: 9px 12px;
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
     border-radius: 999px;
-    background: rgba(81,182,168,0.14);
-    color: #24796f;
+    background: rgba(47, 159, 147, 0.14);
+    color: #217b72;
     font-size: 12px;
-    font-weight: 720;
+    font-weight: 820;
     white-space: nowrap;
+  }
+
+  .temperature-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 16px;
+    align-items: end;
+  }
+
+  .weather-icon {
+    font-size: clamp(54px, 8vw, 82px);
+    line-height: 1;
   }
 
   .temperature {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    margin-top: 12px;
-  }
-
-  .weather-symbol {
-    font-size: clamp(50px, 7vw, 76px);
-    line-height: 1;
+    min-width: 0;
   }
 
   .temperature strong {
-    font-size: clamp(88px, 12vw, 132px);
+    font-size: clamp(92px, 14vw, 148px);
     line-height: 0.82;
     letter-spacing: 0;
-    font-weight: 820;
+    font-weight: 880;
   }
 
   .temperature sup {
-    margin-top: 10px;
-    color: rgba(31,37,43,0.48);
-    font-size: 28px;
+    margin-top: 8px;
+    color: var(--ink-faint);
+    font-size: clamp(24px, 4vw, 34px);
+    font-weight: 740;
+  }
+
+  .weather-summary {
+    margin: 0;
+    color: var(--ink-soft);
+    line-height: 1.72;
   }
 
   .metric-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 10px;
   }
 
   .metric,
-  .story-block,
-  .forecast-card {
-    border-radius: 20px;
-    background: rgba(255,255,255,0.58);
-    border: 1px solid rgba(255,255,255,0.44);
-    padding: 15px;
+  .tip,
+  .forecast-card,
+  .hour-card {
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.58);
+    border: 1px solid rgba(255, 255, 255, 0.58);
+  }
+
+  .metric {
+    min-height: 92px;
+    padding: 14px;
+    display: grid;
+    align-content: space-between;
+    gap: 10px;
   }
 
   .metric span,
-  .story-block span,
-  .forecast-card .day {
-    color: rgba(31,37,43,0.50);
+  .forecast-card span,
+  .hour-card span,
+  .tip span,
+  .story-label {
+    color: var(--ink-faint);
     font-size: 12px;
   }
 
-  .metric strong,
-  .story-block strong {
+  .metric strong {
     display: block;
-    margin-top: 8px;
+    font-size: 18px;
+    line-height: 1.1;
+  }
+
+  .forecast-list {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .forecast-card {
+    min-height: 138px;
+    padding: 12px 9px;
+    text-align: center;
+    display: grid;
+    gap: 8px;
+    align-content: center;
+  }
+
+  .forecast-card strong {
+    font-size: 14px;
+  }
+
+  .forecast-card .forecast-icon {
+    font-size: 25px;
+    line-height: 1;
+  }
+
+  .forecast-card small {
+    color: var(--ink-faint);
+    font-size: 11px;
+  }
+
+  .hour-row {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(8, minmax(86px, 1fr));
+    gap: 9px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .hour-card {
+    min-height: 106px;
+    padding: 12px 9px;
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 7px;
+    text-align: center;
+  }
+
+  .hour-card strong {
     font-size: 18px;
   }
 
   .story-panel {
-    padding: 24px;
     display: grid;
-    gap: 16px;
+    gap: 18px;
   }
 
-  .story-title {
-    font-size: 14px;
-    color: rgba(31,37,43,0.55);
-    font-weight: 720;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+  .story-copy {
+    margin: 8px 0 0;
+    color: var(--ink-soft);
+    line-height: 1.72;
   }
 
-  .story-note {
-    color: var(--ink);
-    line-height: 1.7;
-  }
-
-  .forecast-list {
+  .story-list {
     display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 8px;
+    gap: 10px;
   }
 
-  .forecast-card {
-    text-align: center;
-    min-width: 0;
-    padding: 12px 10px;
+  .story-item {
+    min-height: 64px;
+    display: grid;
+    gap: 5px;
+    padding: 12px 0;
+    border-top: 1px solid rgba(24, 32, 39, 0.08);
   }
-  .forecast-card .icon { margin: 8px 0; font-size: 24px; }
-  .forecast-card .range { font-size: 13px; font-weight: 720; }
 
-  .loading-state,
-  .error-state,
-  .empty-state {
-    min-height: 420px;
+  .story-item strong {
+    font-size: 16px;
+  }
+
+  .tips-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .tip {
+    min-height: 74px;
+    padding: 14px;
+    display: grid;
+    gap: 7px;
+  }
+
+  .tip strong {
+    font-size: 15px;
+  }
+
+  .state-panel {
+    min-height: 410px;
     display: grid;
     place-items: center;
     text-align: center;
-    color: rgba(31,37,43,0.56);
+    color: var(--ink-soft);
   }
 
-  .loading-state strong,
-  .error-state strong,
-  .empty-state strong {
+  .state-panel strong {
     display: block;
     color: var(--ink);
     font-size: 24px;
@@ -546,111 +858,274 @@
   }
 
   .loader {
-    width: 44px;
-    height: 44px;
+    width: 46px;
+    height: 46px;
     margin: 0 auto 18px;
-    border-radius: 50%;
-    border: 3px solid rgba(31,37,43,0.12);
-    border-top-color: var(--accent);
-    animation: spin 780ms linear infinite;
+    border-radius: 999px;
+    border: 3px solid rgba(24, 32, 39, 0.12);
+    border-top-color: var(--coral);
+    animation: spin 760ms linear infinite;
   }
+
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  @media (max-width: 960px) {
-    .detail-grid { grid-template-columns: 1fr; }
-    .forecast-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  @media (max-width: 980px) {
+    .search-stage,
+    .detail-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .search-panel,
+    .weather-lens {
+      min-height: auto;
+    }
+
+    .weather-lens {
+      grid-template-rows: auto;
+    }
+
+    .forecast-list {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 
   @media (max-width: 700px) {
-    .topbar { align-items: flex-start; }
-    .time-pill { display: none; }
-    .search-hero, .detail-hero, .panel { border-radius: 24px; }
-    .search-box { grid-template-columns: 38px 1fr 38px; min-height: 60px; }
-    .primary-btn { grid-column: 1 / -1; width: 100%; margin-top: 8px; }
-    .hero-title { font-size: 44px; }
-    .metric-grid { grid-template-columns: 1fr; }
-    .forecast-list { display: flex; overflow-x: auto; padding-bottom: 4px; }
-    .forecast-card { min-width: 76px; }
-    .detail-hero { min-height: 360px; }
-    .detail-hero-content { padding: 22px; }
+    .shell {
+      width: min(100% - 24px, 1180px);
+      padding-top: 18px;
+      gap: 18px;
+    }
+
+    .topbar {
+      align-items: flex-start;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 13px;
+    }
+
+    .time-chip {
+      display: none;
+    }
+
+    .search-panel,
+    .weather-lens,
+    .hero-card,
+    .panel {
+      border-radius: 22px;
+    }
+
+    .search-panel {
+      padding: 24px;
+    }
+
+    .hero-title {
+      font-size: 45px;
+    }
+
+    .search-box {
+      grid-template-columns: 42px minmax(0, 1fr) 42px;
+      min-height: 62px;
+      gap: 6px;
+    }
+
+    .search-symbol,
+    .ghost-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+    }
+
+    .primary-btn {
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+
+    .weather-lens {
+      padding: 18px;
+    }
+
+    .lens-map {
+      min-height: 220px;
+    }
+
+    .lens-temp strong {
+      font-size: 72px;
+    }
+
+    .hero-card {
+      min-height: 390px;
+    }
+
+    .panel-head,
+    .temperature-row {
+      grid-template-columns: 1fr;
+      display: grid;
+    }
+
+    .weather-badge {
+      justify-self: start;
+    }
+
+    .metric-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .forecast-list {
+      display: flex;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .forecast-card {
+      min-width: 96px;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .brand-subtitle {
+      display: none;
+    }
+
+    .search-panel {
+      padding: 20px;
+    }
+
+    .hero-title {
+      font-size: 39px;
+    }
+
+    .metric-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .place-title {
+      font-size: 42px;
+    }
   }
 </style>
 </head>
 <body>
-<div class="scene" id="scene"></div>
+<div class="backdrop" id="backdrop"></div>
 
 <main class="shell">
   <header class="topbar">
     <div class="brand">
       <div class="brand-mark" aria-hidden="true"></div>
       <div>
-        <h1>Krick's Weather</h1>
-        <p>天气与城市景色，不并排，先搜再看</p>
+        <h1 class="brand-title">Krick's Weather</h1>
+        <div class="brand-subtitle">城市天气明信片</div>
       </div>
     </div>
-    <button class="back-btn" id="backBtn" type="button">← 返回搜索</button>
-    <div class="time-pill" id="timePill"></div>
+    <div class="top-actions">
+      <button class="back-btn" id="backBtn" type="button" aria-label="返回搜索">← 搜索</button>
+      <div class="time-chip" id="timeChip"></div>
+    </div>
   </header>
 
   <section class="view search-view active" id="searchView">
-    <div class="search-hero">
-      <div class="eyebrow">Weather portrait</div>
-      <div class="hero-title">搜索一座城，看见它的<span>天气</span>与景色。</div>
-      <p class="hero-copy">输入中国城市、区县或更完整的地名。结果会进入详情页，并优先配上这座城市最有代表性的景色。</p>
+    <div class="search-stage">
+      <section class="search-panel" aria-labelledby="searchTitle">
+        <p class="eyebrow">Weather portrait</p>
+        <h2 class="hero-title" id="searchTitle">把一座城的天气，读成一张<span>风景明信片</span>。</h2>
+        <p class="hero-copy">风、云、湿度、降水概率和七日趋势，会和城市最有辨识度的景色一起铺开。</p>
 
-      <div class="search-wrap">
-        <form class="search-box" id="searchForm">
-          <div class="search-icon" aria-hidden="true">⌕</div>
-          <input class="search-input" id="searchInput" type="search" placeholder="试试：北京、上海、杭州、成都..." autocomplete="off">
-          <button class="icon-btn" id="clearBtn" type="button" aria-label="清空搜索">×</button>
-          <button class="primary-btn" type="submit">搜索天气</button>
-        </form>
-        <div class="suggestions" id="suggestions"></div>
-      </div>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <div class="search-symbol" aria-hidden="true">⌕</div>
+            <input class="search-input" id="searchInput" type="search" placeholder="搜索城市、区县或地名" autocomplete="off" aria-label="搜索城市">
+            <button class="ghost-btn" id="clearBtn" type="button" aria-label="清空">×</button>
+            <button class="primary-btn" type="submit">查看天气</button>
+          </form>
+          <div class="suggestions" id="suggestions" role="listbox" aria-label="地点建议"></div>
+        </div>
 
-      <div class="quick-row" id="quickRow"></div>
+        <div class="quick-row" id="quickRow" aria-label="热门城市"></div>
+      </section>
+
+      <aside class="weather-lens" aria-label="城市天气快照">
+        <div class="lens-top">
+          <div class="lens-label">Live city mood</div>
+          <div class="pulse-dot" aria-hidden="true"></div>
+        </div>
+        <div class="lens-map">
+          <div>
+            <div class="lens-temp"><strong>24</strong><span>°C</span></div>
+            <p class="lens-caption">天气不是一串数字，它也会改变街道、树影、窗边和傍晚的颜色。</p>
+          </div>
+        </div>
+        <div class="city-strip">
+          <div class="city-tile"><i>晴</i><div><strong>杭州 · 西湖</strong><span>晨间微风，湖面更清亮</span></div><b>18°</b></div>
+          <div class="city-tile"><i>云</i><div><strong>成都 · 锦里</strong><span>湿度偏高，街巷适合慢走</span></div><b>22°</b></div>
+          <div class="city-tile"><i>雨</i><div><strong>重庆 · 洪崖洞</strong><span>夜色和水汽一起亮起来</span></div><b>20°</b></div>
+        </div>
+      </aside>
     </div>
   </section>
 
   <section class="view detail-view" id="detailView">
-    <div class="detail-shell">
-      <div class="detail-hero" id="detailHero">
-        <div class="detail-hero-content">
-          <div class="place-line">
-            <div class="place-title" id="placeTitle">城市</div>
-            <div class="place-tag" id="placeTag">代表景色</div>
+    <div class="detail-stack">
+      <section class="hero-card" id="heroCard" aria-labelledby="placeTitle">
+        <div class="hero-content">
+          <div class="hero-kicker">
+            <span class="pill" id="placeLandmark">代表景色</span>
+            <span class="pill" id="placeWeather">等待天气</span>
           </div>
-      <div class="place-copy" id="placeCopy">搜索一个中国城市后，这里会展示天气与代表景色。</div>
+          <h2 class="place-title" id="placeTitle">城市</h2>
+          <p class="place-copy" id="placeCopy">搜索后，这里会显示这座城市的天气、景色和今天最值得留意的变化。</p>
         </div>
-      </div>
+      </section>
 
       <div class="detail-grid">
-        <article class="panel weather-panel" id="weatherPanel">
-          <div class="empty-state">
-            <div>
-              <strong>先搜索，再进入详情</strong>
-              <p>搜索结果出现后，这里会变成城市天气信息卡。</p>
+        <div class="main-column">
+          <article class="panel current-panel" id="weatherPanel">
+            <div class="state-panel">
+              <div>
+                <strong>选择一座城市</strong>
+                <p>天气卡片会在这里展开。</p>
+              </div>
             </div>
-          </div>
-        </article>
+          </article>
 
-        <aside class="panel story-panel" id="storyPanel">
-          <div>
-            <div class="story-title">地方介绍</div>
-            <div class="story-note" id="storyNote">选定城市后，这里会显示代表景点与天气概况。</div>
-          </div>
-          <div class="story-block">
-            <span>城市状态</span>
-            <strong id="storyWeather">等待搜索</strong>
-          </div>
-          <div class="story-block">
-            <span>代表景色</span>
-            <strong id="storyLandmark">未选择</strong>
-          </div>
-          <div class="story-block">
-            <span>地理信息</span>
-            <strong id="storyGeo">--</strong>
-          </div>
+          <article class="panel" id="forecastPanel">
+            <h3 class="panel-title">七日趋势</h3>
+            <div class="forecast-list" id="forecastList"></div>
+          </article>
+
+          <article class="panel" id="hourlyPanel">
+            <h3 class="panel-title">接下来几小时</h3>
+            <div class="hour-row" id="hourRow"></div>
+          </article>
+        </div>
+
+        <aside class="side-column">
+          <section class="panel story-panel" id="storyPanel">
+            <div>
+              <h3 class="panel-title">城市片段</h3>
+              <p class="story-copy" id="storyCopy">每座城市都有自己的天气质感。</p>
+            </div>
+            <div class="story-list">
+              <div class="story-item">
+                <span class="story-label">代表地点</span>
+                <strong id="storyLandmark">未选择</strong>
+              </div>
+              <div class="story-item">
+                <span class="story-label">今日感受</span>
+                <strong id="storyMood">等待天气</strong>
+              </div>
+              <div class="story-item">
+                <span class="story-label">地理坐标</span>
+                <strong id="storyGeo">--</strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="tipsPanel">
+            <h3 class="panel-title">出行提醒</h3>
+            <div class="tips-list" id="tipsList"></div>
+          </section>
         </aside>
       </div>
     </div>
@@ -658,201 +1133,316 @@
 </main>
 
 <script>
-const scene = document.getElementById('scene');
-const timePill = document.getElementById('timePill');
-const backBtn = document.getElementById('backBtn');
-const searchView = document.getElementById('searchView');
-const detailView = document.getElementById('detailView');
-const searchForm = document.getElementById('searchForm');
-const searchInput = document.getElementById('searchInput');
-const clearBtn = document.getElementById('clearBtn');
-const suggestions = document.getElementById('suggestions');
-const quickRow = document.getElementById('quickRow');
-const detailHero = document.getElementById('detailHero');
-const placeTitle = document.getElementById('placeTitle');
-const placeTag = document.getElementById('placeTag');
-const placeCopy = document.getElementById('placeCopy');
-const weatherPanel = document.getElementById('weatherPanel');
-const storyNote = document.getElementById('storyNote');
-const storyWeather = document.getElementById('storyWeather');
-const storyLandmark = document.getElementById('storyLandmark');
-const storyGeo = document.getElementById('storyGeo');
+const $ = (id) => document.getElementById(id);
+
+const backdrop = $('backdrop');
+const timeChip = $('timeChip');
+const backBtn = $('backBtn');
+const searchView = $('searchView');
+const detailView = $('detailView');
+const searchForm = $('searchForm');
+const searchInput = $('searchInput');
+const clearBtn = $('clearBtn');
+const suggestions = $('suggestions');
+const quickRow = $('quickRow');
+const heroCard = $('heroCard');
+const placeTitle = $('placeTitle');
+const placeLandmark = $('placeLandmark');
+const placeWeather = $('placeWeather');
+const placeCopy = $('placeCopy');
+const weatherPanel = $('weatherPanel');
+const forecastList = $('forecastList');
+const hourRow = $('hourRow');
+const storyCopy = $('storyCopy');
+const storyLandmark = $('storyLandmark');
+const storyMood = $('storyMood');
+const storyGeo = $('storyGeo');
+const tipsList = $('tipsList');
+
+const quickCities = ['北京', '上海', '杭州', '成都', '重庆', '厦门', '西安', '广州', '苏州', '昆明'];
 
 const weatherCodes = {
   0: ['晴天', '☀️'], 1: ['少云', '🌤️'], 2: ['多云', '⛅'], 3: ['阴天', '☁️'],
   45: ['有雾', '🌫️'], 48: ['雾凇', '🌫️'], 51: ['小毛毛雨', '🌦️'], 53: ['毛毛雨', '🌦️'],
-  55: ['强毛毛雨', '🌧️'], 61: ['小雨', '🌧️'], 63: ['中雨', '🌧️'], 65: ['大雨', '🌧️'],
-  71: ['小雪', '🌨️'], 73: ['中雪', '🌨️'], 75: ['大雪', '❄️'], 77: ['雪粒', '❄️'],
-  80: ['阵雨', '🌦️'], 81: ['强阵雨', '🌧️'], 82: ['暴雨', '🌧️'],
-  85: ['阵雪', '🌨️'], 86: ['强阵雪', '❄️'], 95: ['雷暴', '⛈️'], 96: ['雷暴伴冰雹', '⛈️'], 99: ['强雷暴冰雹', '⛈️']
+  55: ['强毛毛雨', '🌧️'], 56: ['冻毛毛雨', '🌧️'], 57: ['强冻毛毛雨', '🌧️'],
+  61: ['小雨', '🌧️'], 63: ['中雨', '🌧️'], 65: ['大雨', '🌧️'],
+  66: ['冻雨', '🌧️'], 67: ['强冻雨', '🌧️'], 71: ['小雪', '🌨️'], 73: ['中雪', '🌨️'],
+  75: ['大雪', '❄️'], 77: ['雪粒', '❄️'], 80: ['阵雨', '🌦️'], 81: ['强阵雨', '🌧️'],
+  82: ['暴雨', '🌧️'], 85: ['阵雪', '🌨️'], 86: ['强阵雪', '❄️'],
+  95: ['雷暴', '⛈️'], 96: ['雷暴伴冰雹', '⛈️'], 99: ['强雷暴冰雹', '⛈️']
 };
 
-const landmarkMap = {
-  '北京': ['故宫', '故宫博物院'],
-  '上海': ['外滩', '黄浦江'],
-  '天津': ['天津之眼', '海河'],
-  '重庆': ['洪崖洞', '两江夜景'],
-  '杭州': ['西湖', '断桥'],
-  '成都': ['都江堰', '武侯祠'],
-  '西安': ['大雁塔', '钟楼'],
-  '南京': ['夫子庙', '中山陵'],
-  '苏州': ['拙政园', '苏州园林'],
-  '武汉': ['黄鹤楼', '东湖'],
-  '长沙': ['橘子洲', '岳麓山'],
-  '厦门': ['鼓浪屿', '厦门大学'],
-  '青岛': ['栈桥', '五四广场'],
-  '大理': ['洱海', '大理古城'],
-  '丽江': ['丽江古城', '玉龙雪山'],
-  '昆明': ['滇池', '西山'],
-  '桂林': ['漓江', '象鼻山'],
-  '拉萨': ['布达拉宫', '八廓街'],
-  '三亚': ['亚龙湾', '天涯海角'],
-  '香港': ['维多利亚港', '太平山'],
-  '澳门': ['大三巴牌坊', '澳门塔'],
-  '台北': ['台北101', '中正纪念堂'],
-  '哈尔滨': ['圣索菲亚教堂', '中央大街'],
-  '郑州': ['少林寺', '中原福塔'],
-  '洛阳': ['龙门石窟', '白马寺'],
-  '济南': ['趵突泉', '大明湖'],
-  '福州': ['三坊七巷', '鼓山'],
-  '贵阳': ['甲秀楼', '青岩古镇'],
-  '南宁': ['青秀山', '南湖公园'],
-  '乌鲁木齐': ['天山天池', '红山公园'],
-  '呼和浩特': ['大召寺', '敕勒川草原'],
-  '银川': ['镇北堡西部影城', '沙湖'],
-  '深圳': ['深圳湾公园', '大梅沙'],
-  '广州': ['广州塔', '珠江夜游']
+const cityProfiles = {
+  '北京': {
+    landmarks: ['故宫', '中轴线'],
+    copy: '北京的天气常常让城市轮廓变得很鲜明。晴天适合看屋脊和城墙的阴影，风起时，胡同里的树声也会变得清楚。',
+    mood: '历史街区和开阔天光之间的反差很强'
+  },
+  '上海': {
+    landmarks: ['外滩', '黄浦江'],
+    copy: '上海的天气会直接改变江面和玻璃幕墙的颜色。晴朗时线条锐利，阴雨时街灯、梧桐和水汽更有电影感。',
+    mood: '江风、天际线和街角灯光一起变化'
+  },
+  '杭州': {
+    landmarks: ['西湖', '断桥'],
+    copy: '杭州的天气很适合被慢慢看。薄云、细雨、湿润空气和湖面反光，会让西湖在一天里换好几种表情。',
+    mood: '湖面、山色和湿润空气都很敏感'
+  },
+  '成都': {
+    landmarks: ['锦里', '都江堰'],
+    copy: '成都的天气不急，云层和湿度常常把城市节奏压得更柔。适合看树荫、茶馆、街巷和傍晚的灯。',
+    mood: '空气柔和，街巷适合慢下来'
+  },
+  '重庆': {
+    landmarks: ['洪崖洞', '两江夜景'],
+    copy: '重庆的天气带着立体感。雾、雨和高差会让楼宇、桥和江面叠在一起，夜景尤其容易被水汽点亮。',
+    mood: '山城层次和江面反光都很强'
+  },
+  '厦门': {
+    landmarks: ['鼓浪屿', '环岛路'],
+    copy: '厦门的天气和海风绑定得很紧。晴天明亮，阵雨来得快，海边的云影常常比预报更有现场感。',
+    mood: '海风、云影和街巷色彩很轻快'
+  },
+  '西安': {
+    landmarks: ['大雁塔', '城墙'],
+    copy: '西安的天气会把古城的线条推到前景。晴朗时适合看城墙轮廓，傍晚的暖色会让砖石更有厚度。',
+    mood: '古城线条清楚，夕光很有分量'
+  },
+  '广州': {
+    landmarks: ['广州塔', '珠江'],
+    copy: '广州的天气总有潮湿的底色。晴热、阵雨和江风切换很快，珠江两岸的光也跟着变。',
+    mood: '湿热、江风和城市灯色交织'
+  },
+  '苏州': {
+    landmarks: ['拙政园', '苏州园林'],
+    copy: '苏州的天气很适合落在园林里。云影、细雨、白墙和水面，让温度之外的变化也变得可见。',
+    mood: '园林、水面和白墙都很吃天气'
+  },
+  '昆明': {
+    landmarks: ['滇池', '西山'],
+    copy: '昆明的天气常带着清亮的高原感。日照、风和云的变化，会让滇池和远山显得更开阔。',
+    mood: '日照清亮，风和云都很有存在感'
+  },
+  '南京': {
+    landmarks: ['中山陵', '夫子庙'],
+    copy: '南京的天气会让树影、城墙和河岸一起变色。晴天厚重，雨天安静，适合看历史和日常怎样叠在一起。',
+    mood: '树影浓，城市记忆感很强'
+  },
+  '武汉': {
+    landmarks: ['黄鹤楼', '东湖'],
+    copy: '武汉的天气有江湖气。风从水面过来时，城市会显得更开阔；热起来时，街道的生命力也很直接。',
+    mood: '江风和湖面让城市更有展开感'
+  }
 };
 
-const quickCities = ['北京', '上海', '杭州', '成都', '重庆', '厦门', '西安', '广州'];
 const placeCache = new Map();
 const imageCache = new Map();
 let currentSuggestions = [];
 let activeIndex = -1;
 let debounceTimer = null;
-let currentPlace = null;
+let searchToken = 0;
+
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[char]));
+}
 
 function updateClock() {
-  timePill.textContent = new Intl.DateTimeFormat('zh-CN', {
+  timeChip.textContent = new Intl.DateTimeFormat('zh-CN', {
     month: 'long', day: 'numeric', weekday: 'long', hour: '2-digit', minute: '2-digit'
   }).format(new Date());
 }
 
 function weatherInfo(code) {
-  const [desc, icon] = weatherCodes[code] || ['未知天气', '🌡️'];
-  return { desc, icon };
+  const [label, icon] = weatherCodes[code] || ['天气变化中', '🌡️'];
+  return { label, icon };
 }
 
-function formatLabel(place) {
-  return [place.name, place.admin1].filter(Boolean).join(' · ');
+function formatDate(dateString, options) {
+  return new Intl.DateTimeFormat('zh-CN', options).format(new Date(dateString));
+}
+
+function formatToday() {
+  return new Intl.DateTimeFormat('zh-CN', {
+    month: 'long', day: 'numeric', weekday: 'long'
+  }).format(new Date());
 }
 
 function isChinese(text) {
   return /[\u4e00-\u9fff]/.test(text || '');
 }
 
+function cleanCityName(name) {
+  return String(name || '')
+    .replace(/特别行政区$/g, '')
+    .replace(/市$|区$|县$|自治州$|盟$|地区$/g, '');
+}
+
+function formatLabel(place) {
+  return [place.name, place.admin1, place.country].filter(Boolean).join(' · ');
+}
+
+function profileFor(place) {
+  const cleanName = cleanCityName(place.name);
+  return cityProfiles[cleanName] || {
+    landmarks: [cleanName || place.name || '城市地标', '风景名胜'],
+    copy: `${place.name} 的天气会改变街道、天光和远处地平线的颜色。看看当前温度、风和降水趋势，再决定今天用什么节奏经过这座城市。`,
+    mood: '天气和城市景色正在同步'
+  };
+}
+
+function renderQuickCities() {
+  quickRow.innerHTML = quickCities
+    .map((city) => `<button class="chip-btn" type="button" data-city="${escapeHTML(city)}">${escapeHTML(city)}</button>`)
+    .join('');
+}
+
 function showSearchView() {
   searchView.classList.add('active');
   detailView.classList.remove('active');
   backBtn.classList.remove('visible');
-  document.title = "Krick's Weather · 城市景色";
-  setSceneImage(null);
+  document.title = "Krick's Weather · 城市天气明信片";
+  setBackdropImage(null);
 }
 
 function showDetailView() {
   searchView.classList.remove('active');
   detailView.classList.add('active');
   backBtn.classList.add('visible');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function setSceneImage(url) {
+function setBackdropImage(url) {
   if (!url) {
-    scene.style.setProperty('--image-opacity', '0');
+    backdrop.style.setProperty('--place-opacity', '0');
     return;
   }
   const img = new Image();
   img.onload = () => {
-    scene.style.setProperty('--place-image', `url("${url}")`);
-    scene.style.setProperty('--image-opacity', '0.78');
+    backdrop.style.setProperty('--place-image', `url("${url}")`);
+    backdrop.style.setProperty('--place-opacity', '0.68');
   };
-  img.onerror = () => scene.style.setProperty('--image-opacity', '0');
+  img.onerror = () => backdrop.style.setProperty('--place-opacity', '0');
   img.src = url;
 }
 
 function setHeroImage(url) {
   if (!url) {
-    detailHero.style.setProperty('--hero-opacity', '0');
+    heroCard.style.setProperty('--hero-opacity', '0');
     return;
   }
   const img = new Image();
   img.onload = () => {
-    detailHero.style.setProperty('--hero-image', `url("${url}")`);
-    detailHero.style.setProperty('--hero-opacity', '1');
+    heroCard.style.setProperty('--hero-image', `url("${url}")`);
+    heroCard.style.setProperty('--hero-opacity', '1');
   };
-  img.onerror = () => detailHero.style.setProperty('--hero-opacity', '0');
+  img.onerror = () => heroCard.style.setProperty('--hero-opacity', '0');
   img.src = url;
 }
 
-function showLoading(cityName) {
+function setLoading(place) {
+  const profile = profileFor(place);
+  placeTitle.textContent = place.name;
+  placeLandmark.textContent = profile.landmarks[0];
+  placeWeather.textContent = '读取天气';
+  placeCopy.textContent = profile.copy;
+  storyLandmark.textContent = profile.landmarks.join(' · ');
+  storyMood.textContent = '正在整理';
+  storyGeo.textContent = `${Number(place.latitude).toFixed(2)}, ${Number(place.longitude).toFixed(2)}`;
+  storyCopy.textContent = profile.copy;
+  forecastList.innerHTML = '';
+  hourRow.innerHTML = '';
+  tipsList.innerHTML = '';
   weatherPanel.innerHTML = `
-    <div class="loading-state">
+    <div class="state-panel">
       <div>
         <div class="loader"></div>
         <strong>正在打开展示页</strong>
-        <p>${cityName} 的天气和景色正在同步。</p>
+        <p>${escapeHTML(place.name)} 的天气、趋势和景色正在同步。</p>
       </div>
     </div>`;
 }
 
-function showError(message) {
+function setError(message) {
   weatherPanel.innerHTML = `
-    <div class="error-state">
+    <div class="state-panel">
       <div>
         <strong>加载失败</strong>
-        <p>${message}</p>
+        <p>${escapeHTML(message)}</p>
       </div>
     </div>`;
-}
-
-function renderQuickCities() {
-  quickRow.innerHTML = quickCities.map(city => `<button class="mini-btn" type="button">${city}</button>`).join('');
+  placeWeather.textContent = '暂不可用';
 }
 
 async function searchPlaces(query) {
   const providers = [
     async () => {
-      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=12&language=zh&format=json&country_code=CN`;
-      const resp = await fetch(url);
-      if (!resp.ok) throw new Error('geocoding failed');
-      const data = await resp.json();
-      return (data.results || []).filter(item => {
-        const code = (item.country_code || '').toLowerCase();
-        const country = item.country || '';
-        return code === 'cn' || country.includes('中国') || country.includes('中华人民共和国');
+      const params = new URLSearchParams({
+        name: query,
+        count: '12',
+        language: 'zh',
+        format: 'json',
+        country_code: 'CN'
       });
+      const resp = await fetch(`https://geocoding-api.open-meteo.com/v1/search?${params}`);
+      if (!resp.ok) throw new Error('Open-Meteo 地名搜索失败');
+      const data = await resp.json();
+      return (data.results || [])
+        .filter((item) => {
+          const code = (item.country_code || '').toLowerCase();
+          const country = item.country || '';
+          return code === 'cn' || country.includes('中国') || country.includes('中华人民共和国');
+        })
+        .map((item) => ({
+          name: item.name,
+          latitude: Number(item.latitude),
+          longitude: Number(item.longitude),
+          admin1: item.admin1 || '',
+          country: item.country || '中国'
+        }));
     },
     async () => {
-      const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=12&countrycodes=cn&accept-language=zh-CN&q=${encodeURIComponent(query)}`;
-      const resp = await fetch(url, { headers: { 'Accept-Language': 'zh-CN' } });
-      if (!resp.ok) throw new Error('nominatim failed');
+      const params = new URLSearchParams({
+        format: 'jsonv2',
+        limit: '12',
+        countrycodes: 'cn',
+        addressdetails: '1',
+        'accept-language': 'zh-CN',
+        q: query
+      });
+      const resp = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
+        headers: { 'Accept-Language': 'zh-CN' }
+      });
+      if (!resp.ok) throw new Error('OpenStreetMap 地名搜索失败');
       const data = await resp.json();
-      return data.map(item => ({
+      return data.map((item) => ({
         name: item.name || item.display_name?.split(',')[0]?.trim() || query,
-        latitude: item.lat,
-        longitude: item.lon,
+        latitude: Number(item.lat),
+        longitude: Number(item.lon),
         admin1: item.address?.state || item.address?.province || '',
         country: '中国'
-      })).filter(Boolean);
+      })).filter((item) => Number.isFinite(item.latitude) && Number.isFinite(item.longitude));
     }
   ];
 
   for (const provider of providers) {
     try {
       const results = await provider();
-      if (results.length) return results;
+      if (results.length) return dedupePlaces(results);
     } catch (error) {}
   }
   return [];
+}
+
+function dedupePlaces(places) {
+  const seen = new Set();
+  return places.filter((place) => {
+    const key = `${cleanCityName(place.name)}-${Number(place.latitude).toFixed(2)}-${Number(place.longitude).toFixed(2)}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return place.name && Number.isFinite(place.latitude) && Number.isFinite(place.longitude);
+  });
 }
 
 async function reverseChinesePlace(place) {
@@ -865,15 +1455,23 @@ async function reverseChinesePlace(place) {
   }
 
   try {
-    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${place.latitude}&lon=${place.longitude}&zoom=10&addressdetails=1&accept-language=zh-CN&countrycodes=cn`;
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error('reverse failed');
+    const params = new URLSearchParams({
+      format: 'jsonv2',
+      lat: place.latitude,
+      lon: place.longitude,
+      zoom: '10',
+      addressdetails: '1',
+      'accept-language': 'zh-CN',
+      countrycodes: 'cn'
+    });
+    const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?${params}`);
+    if (!resp.ok) throw new Error('地点反查失败');
     const data = await resp.json();
     const address = data.address || {};
     const candidates = [address.city, address.town, address.village, address.county, address.state, data.name, data.display_name];
     const match = candidates.find(isChinese);
     if (match) {
-      const normalized = { ...place, name: match, displayName: match };
+      const normalized = { ...place, name: match };
       placeCache.set(key, normalized);
       return normalized;
     }
@@ -884,21 +1482,25 @@ async function reverseChinesePlace(place) {
 }
 
 async function normalizePlaces(places) {
-  const list = await Promise.all(places.map(reverseChinesePlace));
-  return list.filter(Boolean);
+  const normalized = await Promise.all(places.map(reverseChinesePlace));
+  return dedupePlaces(normalized);
 }
 
-function renderSuggestions(items) {
+function renderSuggestions(items, emptyText = '没有找到匹配地点') {
   currentSuggestions = items;
   activeIndex = -1;
   if (!items.length) {
-    suggestions.innerHTML = '<button class="suggestion" type="button"><span><strong>没有找到匹配地点</strong><span>换一个更具体的名字试试</span></span></button>';
+    suggestions.innerHTML = `
+      <button class="suggestion" type="button" disabled>
+        <span><strong>${escapeHTML(emptyText)}</strong><span>换一个更具体的名字试试</span></span>
+      </button>`;
     suggestions.classList.add('show');
     return;
   }
+
   suggestions.innerHTML = items.map((place, index) => `
-    <button class="suggestion" type="button" data-index="${index}">
-      <span><strong>${place.name}</strong><span>${place.admin1 || '中国'}</span></span>
+    <button class="suggestion" type="button" data-index="${index}" role="option">
+      <span><strong>${escapeHTML(place.name)}</strong><span>${escapeHTML(place.admin1 || place.country || '中国')}</span></span>
       <small>${Number(place.latitude).toFixed(2)}, ${Number(place.longitude).toFixed(2)}</small>
     </button>
   `).join('');
@@ -917,69 +1519,102 @@ async function updateSuggestions(value) {
     hideSuggestions();
     return;
   }
+
+  const token = ++searchToken;
   try {
     const raw = await searchPlaces(query);
+    if (token !== searchToken) return;
     renderSuggestions(await normalizePlaces(raw));
   } catch (error) {
-    renderSuggestions([]);
+    if (token === searchToken) renderSuggestions([], '搜索暂时不可用');
   }
 }
 
-function landmarkFor(place) {
-  const name = place.name.replace(/市$|区$|县$|自治州$|盟$|地区$/g, '');
-  return landmarkMap[name] || [name, '风景名胜'];
+async function fetchWeatherData(place) {
+  const params = new URLSearchParams({
+    latitude: place.latitude,
+    longitude: place.longitude,
+    current: 'temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,cloud_cover,wind_speed_10m,weather_code,is_day',
+    hourly: 'temperature_2m,weather_code,precipitation_probability,wind_speed_10m',
+    daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,sunrise,sunset',
+    timezone: 'auto',
+    forecast_days: '7'
+  });
+  const resp = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
+  if (!resp.ok) throw new Error('天气接口失败');
+  return resp.json();
 }
 
 async function fetchWikiImage(query) {
-  const url = `https://zh.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrlimit=8&prop=pageimages&piprop=thumbnail&pithumbsize=1800&format=json&origin=*`;
-  const resp = await fetch(url);
-  if (!resp.ok) throw new Error('wiki failed');
+  const params = new URLSearchParams({
+    action: 'query',
+    generator: 'search',
+    gsrsearch: query,
+    gsrlimit: '8',
+    prop: 'pageimages',
+    piprop: 'thumbnail',
+    pithumbsize: '1800',
+    format: 'json',
+    origin: '*'
+  });
+  const resp = await fetch(`https://zh.wikipedia.org/w/api.php?${params}`);
+  if (!resp.ok) throw new Error('维基百科图片失败');
   const data = await resp.json();
   const pages = Object.values(data?.query?.pages || {});
-  const page = pages.find(item => item.thumbnail && !item.missing);
+  const page = pages.find((item) => item.thumbnail && !item.missing);
   return page?.thumbnail?.source || null;
 }
 
 async function fetchCommonsImage(query) {
-  const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrlimit=8&gsrnamespace=6&prop=imageinfo&iiprop=url&iiurlwidth=1800&format=json&origin=*`;
-  const resp = await fetch(url);
-  if (!resp.ok) throw new Error('commons failed');
+  const params = new URLSearchParams({
+    action: 'query',
+    generator: 'search',
+    gsrsearch: query,
+    gsrlimit: '8',
+    gsrnamespace: '6',
+    prop: 'imageinfo',
+    iiprop: 'url',
+    iiurlwidth: '1800',
+    format: 'json',
+    origin: '*'
+  });
+  const resp = await fetch(`https://commons.wikimedia.org/w/api.php?${params}`);
+  if (!resp.ok) throw new Error('Commons 图片失败');
   const data = await resp.json();
   const pages = Object.values(data?.query?.pages || {});
-  const page = pages.find(item => item.imageinfo?.length);
+  const page = pages.find((item) => item.imageinfo?.length);
   return page?.imageinfo?.[0]?.thumburl || page?.imageinfo?.[0]?.url || null;
 }
 
 async function findSceneryImage(place) {
+  const profile = profileFor(place);
   const key = `${place.name}-${place.admin1}`;
   if (imageCache.has(key)) return imageCache.get(key);
 
-  const [landmark] = landmarkFor(place);
-  const cleanName = place.name.replace(/市$|区$|县$|自治州$|盟$|地区$/g, '');
+  const cleanName = cleanCityName(place.name);
   const queries = [
-    `${cleanName} ${landmark}`,
-    landmark,
+    `${cleanName} ${profile.landmarks[0]}`,
+    profile.landmarks[0],
     `${cleanName} 风景`,
-    `${cleanName} 旅游`,
     `${cleanName} 地标`,
-    `${cleanName}`,
-    `${cleanName} cityscape`
+    `${cleanName} cityscape`,
+    cleanName
   ].filter(Boolean);
 
   for (const query of queries) {
     try {
-      const wiki = await fetchWikiImage(query);
-      if (wiki) {
-        imageCache.set(key, wiki);
-        return wiki;
+      const image = await fetchWikiImage(query);
+      if (image) {
+        imageCache.set(key, image);
+        return image;
       }
     } catch (error) {}
 
     try {
-      const commons = await fetchCommonsImage(query);
-      if (commons) {
-        imageCache.set(key, commons);
-        return commons;
+      const image = await fetchCommonsImage(query);
+      if (image) {
+        imageCache.set(key, image);
+        return image;
       }
     } catch (error) {}
   }
@@ -988,103 +1623,179 @@ async function findSceneryImage(place) {
   return null;
 }
 
-async function fetchWeather(place) {
-  currentPlace = place;
-  showLoading(place.name);
-  showDetailView();
+async function selectPlace(place) {
+  const normalized = await reverseChinesePlace(place);
   hideSuggestions();
-  searchInput.value = place.name;
+  searchInput.value = normalized.name;
   clearBtn.classList.add('visible');
-
-  const weatherUrl =
-    `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}` +
-    '&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,weather_code' +
-    '&daily=temperature_2m_max,temperature_2m_min,weather_code' +
-    '&timezone=auto&forecast_days=7';
+  setLoading(normalized);
+  showDetailView();
 
   try {
-    const [weatherResp, imageUrl] = await Promise.all([
-      fetch(weatherUrl),
-      findSceneryImage(place)
+    const [weatherResult, imageResult] = await Promise.allSettled([
+      fetchWeatherData(normalized),
+      findSceneryImage(normalized)
     ]);
-    if (!weatherResp.ok) throw new Error('weather failed');
 
-    const data = await weatherResp.json();
-    renderWeather(data, place, imageUrl);
+    if (weatherResult.status !== 'fulfilled') throw weatherResult.reason;
+    const imageUrl = imageResult.status === 'fulfilled' ? imageResult.value : null;
+    renderWeather(weatherResult.value, normalized, imageUrl);
   } catch (error) {
-    showError('请检查网络连接，或者换一个更明确的地名再试。');
+    setError('请检查网络连接，或者换一个更明确的地名。');
   }
+}
+
+function makeTips(data) {
+  const current = data.current;
+  const daily = data.daily;
+  const temp = Math.round(current.temperature_2m);
+  const apparent = Math.round(current.apparent_temperature);
+  const rain = Math.max(...(daily.precipitation_probability_max || [0]).slice(0, 2));
+  const uv = Math.round(daily.uv_index_max?.[0] || 0);
+  const wind = Math.round(current.wind_speed_10m || 0);
+  const tips = [];
+
+  if (temp >= 30 || apparent >= 32) {
+    tips.push(['热感明显', '把户外行程放在早晚，正午留给室内和阴凉处。']);
+  } else if (temp <= 5 || apparent <= 3) {
+    tips.push(['低温体感', '风口和桥面会更冷，外套、围巾和热饮都很实用。']);
+  } else {
+    tips.push(['温度舒适', '适合慢走和拍照，留意早晚温差就好。']);
+  }
+
+  if (rain >= 60 || current.precipitation > 0) {
+    tips.push(['降水概率高', '雨具放在顺手的位置，路面反光会让夜景更好看。']);
+  } else if (rain >= 30) {
+    tips.push(['可能有雨', '安排可进可退的路线，阵雨前后的天空常常很有层次。']);
+  } else {
+    tips.push(['降水较少', '城市轮廓更容易看清，适合安排开阔视野的地点。']);
+  }
+
+  if (uv >= 7) {
+    tips.push(['紫外线偏强', '帽子、防晒和补水不要省，亮色地面会增强反射。']);
+  } else if (wind >= 28) {
+    tips.push(['风力偏大', '江边、湖边和高架处体感更明显，轻便物品要收好。']);
+  } else {
+    tips.push(['节奏平稳', '天气没有明显阻碍，适合把路线拉长一点。']);
+  }
+
+  return tips.slice(0, 3);
 }
 
 function renderWeather(data, place, imageUrl) {
   const current = data.current;
   const daily = data.daily;
+  const profile = profileFor(place);
   const info = weatherInfo(current.weather_code);
-  const today = new Intl.DateTimeFormat('zh-CN', {
-    month: 'long', day: 'numeric', weekday: 'long'
-  }).format(new Date());
+  const today = formatToday();
+  const temp = Math.round(current.temperature_2m);
+  const apparent = Math.round(current.apparent_temperature);
+  const rain = Math.round(daily.precipitation_probability_max?.[0] || 0);
+  const uv = Math.round(daily.uv_index_max?.[0] || 0);
+  const wind = Math.round(current.wind_speed_10m || 0);
+  const humidity = Math.round(current.relative_humidity_2m || 0);
+  const cloud = Math.round(current.cloud_cover || 0);
+  const sunrise = daily.sunrise?.[0] ? formatDate(daily.sunrise[0], { hour: '2-digit', minute: '2-digit' }) : '--';
+  const sunset = daily.sunset?.[0] ? formatDate(daily.sunset[0], { hour: '2-digit', minute: '2-digit' }) : '--';
+  const summary = `${place.name} 现在${info.label}，气温 ${temp}°C，体感 ${apparent}°C。湿度 ${humidity}%、风速 ${wind} km/h，今天最高降水概率约 ${rain}%。`;
 
-  const landmark = landmarkFor(place)[0];
-  const displayName = place.name;
-  const label = formatLabel(place);
-
-  const forecast = daily.time.map((date, index) => {
-    const dayInfo = weatherInfo(daily.weather_code[index]);
-    const dayLabel = index === 0 ? '今天' : new Intl.DateTimeFormat('zh-CN', { weekday: 'short' }).format(new Date(date));
-    return `
-      <div class="forecast-card">
-        <div class="day">${dayLabel}</div>
-        <div class="icon">${dayInfo.icon}</div>
-        <div class="range">${Math.round(daily.temperature_2m_max[index])}° / ${Math.round(daily.temperature_2m_min[index])}°</div>
-      </div>`;
-  }).join('');
-
-  document.title = `${displayName} · Krick's Weather`;
-  placeTitle.textContent = displayName;
-  placeTag.textContent = landmark;
-  placeCopy.textContent = `${displayName} 的天气与景色会一起展示。`;
-  storyNote.textContent = `${displayName} · ${landmark}。当前天气为 ${info.desc}，今天是 ${today}。`;
-  storyWeather.textContent = `${info.desc} · ${Math.round(current.temperature_2m)}°C`;
-  storyLandmark.textContent = landmark;
+  document.title = `${place.name} · Krick's Weather`;
+  placeTitle.textContent = place.name;
+  placeLandmark.textContent = profile.landmarks[0];
+  placeWeather.textContent = `${info.label} · ${temp}°C`;
+  placeCopy.textContent = profile.copy;
+  storyCopy.textContent = profile.copy;
+  storyLandmark.textContent = profile.landmarks.join(' · ');
+  storyMood.textContent = `${profile.mood} · ${info.label}`;
   storyGeo.textContent = `${Number(place.latitude).toFixed(2)}, ${Number(place.longitude).toFixed(2)}`;
 
-  detailHero.style.setProperty('--hero-opacity', imageUrl ? '1' : '0');
-  if (imageUrl) setHeroImage(imageUrl);
-  setSceneImage(imageUrl);
+  setHeroImage(imageUrl);
+  setBackdropImage(imageUrl);
 
   weatherPanel.innerHTML = `
-    <div>
-      <div class="weather-top">
-        <div>
-          <div class="location-name">${displayName}</div>
-          <div class="location-meta">${label} · ${today}</div>
-        </div>
-        <div class="weather-badge">${info.desc}</div>
+    <div class="panel-head">
+      <div>
+        <h3 class="panel-title">当前天气</h3>
+        <div class="location-name">${escapeHTML(place.name)}</div>
+        <div class="location-meta">${escapeHTML(formatLabel(place))} · ${escapeHTML(today)}</div>
       </div>
+      <div class="weather-badge">${escapeHTML(info.label)}</div>
+    </div>
 
-      <div class="temperature">
-        <div class="weather-symbol">${info.icon}</div>
-        <strong>${Math.round(current.temperature_2m)}</strong>
-        <sup>°C</sup>
-      </div>
-
-      <div class="metric-grid">
-        <div class="metric"><span>体感温度</span><strong>${Math.round(current.apparent_temperature)}°C</strong></div>
-        <div class="metric"><span>空气湿度</span><strong>${current.relative_humidity_2m}%</strong></div>
-        <div class="metric"><span>风速</span><strong>${Math.round(current.wind_speed_10m)} km/h</strong></div>
+    <div class="temperature-row">
+      <div class="weather-icon" aria-hidden="true">${info.icon}</div>
+      <div>
+        <div class="temperature"><strong>${temp}</strong><sup>°C</sup></div>
+        <p class="weather-summary">${escapeHTML(summary)}</p>
       </div>
     </div>
 
-    <div>
-      <div class="story-title" style="margin-bottom:12px;">未来 7 天</div>
-      <div class="forecast-list">${forecast}</div>
-    </div>
-  `;
+    <div class="metric-grid">
+      <div class="metric"><span>体感温度</span><strong>${apparent}°C</strong></div>
+      <div class="metric"><span>空气湿度</span><strong>${humidity}%</strong></div>
+      <div class="metric"><span>风速</span><strong>${wind} km/h</strong></div>
+      <div class="metric"><span>云量</span><strong>${cloud}%</strong></div>
+      <div class="metric"><span>降水概率</span><strong>${rain}%</strong></div>
+      <div class="metric"><span>紫外线</span><strong>${uv}</strong></div>
+      <div class="metric"><span>日出</span><strong>${escapeHTML(sunrise)}</strong></div>
+      <div class="metric"><span>日落</span><strong>${escapeHTML(sunset)}</strong></div>
+    </div>`;
+
+  renderForecast(daily);
+  renderHourly(data.hourly);
+  renderTips(makeTips(data));
 }
 
-backBtn.addEventListener('click', () => {
-  showSearchView();
-});
+function renderForecast(daily) {
+  forecastList.innerHTML = daily.time.map((date, index) => {
+    const info = weatherInfo(daily.weather_code[index]);
+    const day = index === 0 ? '今天' : formatDate(date, { weekday: 'short' });
+    const high = Math.round(daily.temperature_2m_max[index]);
+    const low = Math.round(daily.temperature_2m_min[index]);
+    const rain = Math.round(daily.precipitation_probability_max[index] || 0);
+    return `
+      <div class="forecast-card">
+        <span>${escapeHTML(day)}</span>
+        <div class="forecast-icon" aria-hidden="true">${info.icon}</div>
+        <strong>${high}° / ${low}°</strong>
+        <small>${escapeHTML(info.label)} · ${rain}%雨</small>
+      </div>`;
+  }).join('');
+}
+
+function renderHourly(hourly) {
+  if (!hourly?.time?.length) {
+    hourRow.innerHTML = '';
+    return;
+  }
+
+  const now = Date.now();
+  const startIndex = Math.max(0, hourly.time.findIndex((time) => new Date(time).getTime() >= now - 60 * 60 * 1000));
+  const items = hourly.time.slice(startIndex, startIndex + 8).map((time, offset) => {
+    const index = startIndex + offset;
+    const info = weatherInfo(hourly.weather_code[index]);
+    const hour = offset === 0 ? '现在' : formatDate(time, { hour: '2-digit', minute: '2-digit' });
+    const temp = Math.round(hourly.temperature_2m[index]);
+    const rain = Math.round(hourly.precipitation_probability[index] || 0);
+    return `
+      <div class="hour-card">
+        <span>${escapeHTML(hour)}</span>
+        <div aria-hidden="true">${info.icon}</div>
+        <strong>${temp}°</strong>
+        <span>${rain}%雨</span>
+      </div>`;
+  });
+  hourRow.innerHTML = items.join('');
+}
+
+function renderTips(tips) {
+  tipsList.innerHTML = tips.map(([title, body]) => `
+    <div class="tip">
+      <span>${escapeHTML(title)}</span>
+      <strong>${escapeHTML(body)}</strong>
+    </div>
+  `).join('');
+}
 
 searchInput.addEventListener('input', () => {
   window.clearTimeout(debounceTimer);
@@ -1106,10 +1817,12 @@ searchInput.addEventListener('keydown', (event) => {
     activeIndex = Math.max(activeIndex - 1, 0);
   } else if (event.key === 'Enter' && activeIndex >= 0) {
     event.preventDefault();
-    fetchWeather(currentSuggestions[activeIndex]);
+    selectPlace(currentSuggestions[activeIndex]);
     return;
   } else if (event.key === 'Escape') {
     hideSuggestions();
+    return;
+  } else {
     return;
   }
 
@@ -1122,19 +1835,34 @@ searchForm.addEventListener('submit', async (event) => {
   if (!query) return;
 
   try {
-    const list = await normalizePlaces(await searchPlaces(query));
-    const place = list[0];
-    if (!place) {
-      showSearchView();
-      suggestions.innerHTML = '<button class="suggestion" type="button"><span><strong>没有找到这个地方</strong><span>请换一个更具体的城市名</span></span></button>';
-      suggestions.classList.add('show');
+    const places = await normalizePlaces(await searchPlaces(query));
+    if (!places.length) {
+      renderSuggestions([], '没有找到这个地方');
       return;
     }
-    fetchWeather(place);
+    selectPlace(places[0]);
   } catch (error) {
-    showSearchView();
-    suggestions.innerHTML = '<button class="suggestion" type="button"><span><strong>搜索失败</strong><span>请稍后再试</span></span></button>';
-    suggestions.classList.add('show');
+    renderSuggestions([], '搜索暂时不可用');
+  }
+});
+
+suggestions.addEventListener('click', (event) => {
+  const item = event.target.closest('.suggestion[data-index]');
+  if (!item) return;
+  selectPlace(currentSuggestions[Number(item.dataset.index)]);
+});
+
+quickRow.addEventListener('click', async (event) => {
+  const button = event.target.closest('.chip-btn');
+  if (!button) return;
+  const city = button.dataset.city;
+  searchInput.value = city;
+  clearBtn.classList.add('visible');
+  try {
+    const places = await normalizePlaces(await searchPlaces(city));
+    if (places[0]) selectPlace(places[0]);
+  } catch (error) {
+    renderSuggestions([], '搜索暂时不可用');
   }
 });
 
@@ -1145,22 +1873,7 @@ clearBtn.addEventListener('click', () => {
   searchInput.focus();
 });
 
-suggestions.addEventListener('click', (event) => {
-  const item = event.target.closest('.suggestion[data-index]');
-  if (!item) return;
-  fetchWeather(currentSuggestions[Number(item.dataset.index)]);
-});
-
-quickRow.addEventListener('click', async (event) => {
-  const button = event.target.closest('.mini-btn');
-  if (!button) return;
-  searchInput.value = button.textContent.trim();
-  clearBtn.classList.add('visible');
-  try {
-    const list = await normalizePlaces(await searchPlaces(button.textContent.trim()));
-    if (list[0]) fetchWeather(list[0]);
-  } catch (error) {}
-});
+backBtn.addEventListener('click', showSearchView);
 
 document.addEventListener('click', (event) => {
   if (!event.target.closest('.search-wrap')) hideSuggestions();
