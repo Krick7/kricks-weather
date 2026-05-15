@@ -215,18 +215,89 @@
   }
 
   .hero-copy-panel {
-    min-height: min(650px, calc(100vh - 148px));
-    padding: clamp(30px, 5vw, 58px);
-    border: 1px solid rgba(255, 255, 255, 0.74);
+    position: relative;
+    min-height: min(720px, calc(100vh - 148px));
+    padding: clamp(240px, 35vh, 340px) clamp(30px, 5vw, 58px) clamp(30px, 5vw, 58px);
+    overflow: hidden;
+    border: 1px solid rgba(93, 230, 255, 0.22);
     border-radius: var(--radius-lg);
-    background: rgba(255, 255, 255, 0.72);
-    box-shadow: var(--shadow);
+    background:
+      linear-gradient(180deg, rgba(3, 10, 30, 0.62), rgba(3, 8, 24, 0.94)),
+      #020617;
+    color: #fff;
+    box-shadow: 0 30px 88px rgba(0, 14, 38, 0.24);
     backdrop-filter: blur(26px) saturate(1.18);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     text-align: center;
+  }
+
+  .hero-copy-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(2, 6, 23, 0.06) 0%, rgba(2, 6, 23, 0.32) 58%, rgba(2, 6, 23, 0.86) 100%),
+      radial-gradient(circle at 50% 24%, rgba(0, 216, 255, 0.16), transparent 44%);
+  }
+
+  .hero-copy-panel > :not(.holo-stage) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .holo-stage {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .holo-stage canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .hero-copy-panel .eyebrow {
+    color: #64d2ff;
+    text-shadow: 0 0 24px rgba(100, 210, 255, 0.54);
+  }
+
+  .hero-copy-panel .hero-title {
+    color: #fff;
+    text-shadow: 0 20px 56px rgba(0, 0, 0, 0.42);
+  }
+
+  .hero-copy-panel .hero-title span {
+    color: #5ee7ff;
+  }
+
+  .hero-copy-panel .hero-text,
+  .hero-copy-panel .search-note {
+    color: rgba(255, 255, 255, 0.74);
+  }
+
+  .hero-copy-panel .search-box {
+    background: rgba(255, 255, 255, 0.94);
+    border-color: rgba(255, 255, 255, 0.54);
+    box-shadow: 0 18px 52px rgba(0, 0, 0, 0.28);
+  }
+
+  .hero-copy-panel .chip-btn {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(18px);
+  }
+
+  .hero-copy-panel .chip-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.22);
   }
 
   .eyebrow {
@@ -984,7 +1055,8 @@
     }
 
     .hero-copy-panel {
-      padding: 24px;
+      min-height: min(720px, calc(100vh - 116px));
+      padding: clamp(220px, 48vh, 320px) 24px 24px;
     }
 
     .hero-title {
@@ -1046,11 +1118,11 @@
 
   @media (max-width: 420px) {
     .hero-copy-panel {
-      padding: 20px;
+      padding: 226px 20px 20px;
     }
 
     .hero-title {
-      font-size: 39px;
+      font-size: 36px;
     }
 
     .metric-grid {
@@ -1084,6 +1156,9 @@
   <section class="view search-view active" id="searchView">
     <div class="hero-grid">
       <section class="hero-copy-panel" aria-labelledby="searchTitle">
+        <div class="holo-stage" aria-hidden="true">
+          <canvas id="holoEarth"></canvas>
+        </div>
         <p class="eyebrow" id="heroEyebrow">Krick's Weather</p>
         <h2 class="hero-title" id="searchTitle">先问一座城，<span>再看它的天气。</span></h2>
         <p class="hero-text" id="heroText">输入城市、区县或地名，搜索后再进入天气结果页。首屏只留给这一件事。</p>
@@ -1189,6 +1264,7 @@ const searchInput = $('searchInput');
 const clearBtn = $('clearBtn');
 const suggestions = $('suggestions');
 const quickRow = $('quickRow');
+const holoEarthCanvas = $('holoEarth');
 const heroEyebrow = $('heroEyebrow');
 const searchTitle = $('searchTitle');
 const heroText = $('heroText');
@@ -1432,6 +1508,279 @@ function renderEntryCopy() {
   searchTitle.innerHTML = `${escapeHTML(copy.title)}<span>${escapeHTML(copy.accent)}</span>`;
   heroText.textContent = copy.text;
   searchNote.textContent = copy.note;
+}
+
+function startHolographicEarth() {
+  const canvas = holoEarthCanvas;
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const panel = canvas.closest('.hero-copy-panel') || canvas;
+  const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+  const DEG = Math.PI / 180;
+  const TAU = Math.PI * 2;
+
+  let width = 0;
+  let height = 0;
+  let dpr = 1;
+  let radius = 0;
+  let centerX = 0;
+  let centerY = 0;
+  let rotationY = -118;
+  let tiltCos = 1;
+  let tiltSin = 0;
+  let pointerX = 0;
+  let pointerY = 0;
+  let targetX = 0;
+  let targetY = 0;
+
+  const dots = [];
+  for (let lat = -72; lat <= 72; lat += 4) {
+    for (let lon = -180; lon < 180; lon += 4) {
+      const glow = 0.5 + Math.sin((lat * 11 + lon * 7) * DEG) * 0.5;
+      dots.push({ lat, lon, glow });
+    }
+  }
+
+  const coastlines = [
+    [[58, 72], [58, 98], [62, 126], [52, 142], [42, 146], [36, 139], [31, 122], [24, 118], [16, 108], [9, 103], [1, 104], [-7, 108], [-8, 118], [-2, 126], [-6, 136], [-15, 145], [-25, 153], [-38, 146], [-36, 118], [-22, 114], [-13, 126], [-6, 130]],
+    [[45, 126], [39, 128], [36, 126], [34, 129], [35, 135], [39, 141], [43, 144]],
+    [[31, 77], [25, 72], [19, 73], [8, 78], [10, 85], [20, 88], [25, 93], [22, 98], [18, 96]],
+    [[63, -166], [57, -137], [49, -124], [36, -122], [25, -111], [16, -97], [9, -82], [-5, -79], [-16, -76], [-34, -72], [-53, -70]],
+    [[62, -55], [58, -30], [52, 2], [44, 28], [35, 45], [27, 55], [20, 72], [10, 78], [1, 44], [-10, 38], [-23, 28], [-35, 18], [-34, 32], [-20, 45], [2, 51], [17, 39], [31, 31]],
+    [[69, 18], [60, 32], [54, 48], [44, 58], [40, 72], [48, 91], [56, 105]]
+  ];
+
+  const routes = [
+    { from: [39.9, 116.4], to: [31.2, 121.5], color: '#5ee7ff', bend: 8, offset: 0.04 },
+    { from: [39.9, 116.4], to: [35.7, 139.7], color: '#2f6bff', bend: 15, offset: 0.22 },
+    { from: [31.2, 121.5], to: [22.5, 114.1], color: '#ff3b30', bend: 6, offset: 0.40 },
+    { from: [30.6, 104.1], to: [1.3, 103.8], color: '#ff9f0a', bend: 18, offset: 0.58 },
+    { from: [22.5, 114.1], to: [-33.9, 151.2], color: '#00f5d4', bend: 20, offset: 0.76 },
+    { from: [31.2, 121.5], to: [25.0, 121.5], color: '#64d2ff', bend: 5, offset: 0.88 }
+  ];
+
+  function resize() {
+    const rect = panel.getBoundingClientRect();
+    const nextWidth = Math.max(1, Math.floor(rect.width));
+    const nextHeight = Math.max(1, Math.floor(rect.height));
+    const nextDpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (nextWidth === width && nextHeight === height && nextDpr === dpr) return;
+
+    width = nextWidth;
+    height = nextHeight;
+    dpr = nextDpr;
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function project(lat, lon) {
+    const latRad = lat * DEG;
+    const lonRad = (lon + rotationY) * DEG;
+    const cosLat = Math.cos(latRad);
+    const x = cosLat * Math.sin(lonRad);
+    const y = Math.sin(latRad);
+    const z = cosLat * Math.cos(lonRad);
+    const y2 = y * tiltCos - z * tiltSin;
+    const z2 = y * tiltSin + z * tiltCos;
+    const perspective = 1 + z2 * 0.08;
+
+    return {
+      x: centerX + x * radius * perspective,
+      y: centerY - y2 * radius * perspective,
+      z: z2,
+      visible: z2 > -0.08
+    };
+  }
+
+  function drawProjectedPath(points, color, lineWidth, alpha) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = color;
+    ctx.beginPath();
+
+    let open = false;
+    points.forEach(([lat, lon]) => {
+      const point = project(lat, lon);
+      if (!point.visible) {
+        open = false;
+        return;
+      }
+      if (!open) {
+        ctx.moveTo(point.x, point.y);
+        open = true;
+      } else {
+        ctx.lineTo(point.x, point.y);
+      }
+    });
+
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function routePoint(route, progress) {
+    const [fromLat, fromLon] = route.from;
+    const [toLat, toLon] = route.to;
+    let lonDelta = toLon - fromLon;
+    if (lonDelta > 180) lonDelta -= 360;
+    if (lonDelta < -180) lonDelta += 360;
+    const lift = Math.sin(progress * Math.PI) * route.bend;
+    return [
+      fromLat + (toLat - fromLat) * progress + lift,
+      fromLon + lonDelta * progress
+    ];
+  }
+
+  function drawRoute(route, seconds) {
+    const path = [];
+    for (let step = 0; step <= 42; step += 1) {
+      path.push(routePoint(route, step / 42));
+    }
+    drawProjectedPath(path, route.color, 1.2, 0.22);
+
+    const head = (seconds * (reduceMotion ? 0.06 : 0.18) + route.offset) % 1;
+    for (let index = 0; index < 10; index += 1) {
+      const progress = (head - index * 0.018 + 1) % 1;
+      const point = project(...routePoint(route, progress));
+      if (!point.visible) continue;
+
+      const alpha = Math.max(0, 0.92 - index * 0.085);
+      const size = 3.2 - index * 0.16;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = route.color;
+      ctx.shadowBlur = 16;
+      ctx.shadowColor = route.color;
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, size, 0, TAU);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function drawGridLine(isLatitude, value) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(100, 210, 255, 0.18)';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    let open = false;
+
+    const start = isLatitude ? -180 : -78;
+    const end = isLatitude ? 180 : 78;
+    for (let value2 = start; value2 <= end; value2 += 5) {
+      const lat = isLatitude ? value : value2;
+      const lon = isLatitude ? value2 : value;
+      const point = project(lat, lon);
+      if (!point.visible) {
+        open = false;
+        continue;
+      }
+      if (!open) {
+        ctx.moveTo(point.x, point.y);
+        open = true;
+      } else {
+        ctx.lineTo(point.x, point.y);
+      }
+    }
+
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawFrame(now) {
+    resize();
+    if (width < 2 || height < 2) {
+      window.requestAnimationFrame(drawFrame);
+      return;
+    }
+
+    const seconds = now / 1000;
+    pointerX += (targetX - pointerX) * 0.045;
+    pointerY += (targetY - pointerY) * 0.045;
+    radius = Math.min(width, height) * (width < 560 ? 0.43 : 0.39);
+    centerX = width * 0.5;
+    centerY = height * (width < 560 ? 0.29 : 0.34);
+    rotationY = -118 + pointerX + seconds * (reduceMotion ? 0.55 : 4.2);
+    const rotationX = -8 + pointerY;
+    tiltCos = Math.cos(rotationX * DEG);
+    tiltSin = Math.sin(rotationX * DEG);
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(0, 0, width, height);
+
+    for (let index = 0; index < 70; index += 1) {
+      const x = (index * 97) % Math.max(width, 1);
+      const y = ((index * 53) % Math.max(height * 0.64, 1));
+      const alpha = 0.12 + Math.sin(seconds + index) * 0.05;
+      ctx.fillStyle = `rgba(164, 230, 255, ${alpha})`;
+      ctx.fillRect(x, y, 1, 1);
+    }
+
+    const glow = ctx.createRadialGradient(centerX - radius * 0.24, centerY - radius * 0.32, radius * 0.04, centerX, centerY, radius);
+    glow.addColorStop(0, 'rgba(32, 142, 255, 0.62)');
+    glow.addColorStop(0.46, 'rgba(10, 35, 86, 0.56)');
+    glow.addColorStop(1, 'rgba(2, 8, 26, 0.94)');
+
+    ctx.save();
+    ctx.shadowBlur = 42;
+    ctx.shadowColor = 'rgba(0, 216, 255, 0.48)';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, TAU);
+    ctx.fillStyle = glow;
+    ctx.fill();
+    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = 'rgba(94, 231, 255, 0.7)';
+    ctx.stroke();
+    ctx.restore();
+
+    for (let lat = -60; lat <= 60; lat += 15) drawGridLine(true, lat);
+    for (let lon = -180; lon < 180; lon += 15) drawGridLine(false, lon);
+
+    dots.forEach((dot) => {
+      const point = project(dot.lat, dot.lon);
+      if (!point.visible) return;
+      const pulse = 0.08 + Math.sin(seconds * 1.8 + dot.glow * 8) * 0.04;
+      const alpha = Math.min(0.72, 0.16 + point.z * 0.34 + dot.glow * 0.08 + pulse);
+      ctx.fillStyle = `rgba(201, 245, 255, ${Math.max(0.08, alpha)})`;
+      ctx.fillRect(point.x, point.y, width < 560 ? 0.85 : 1.05, width < 560 ? 0.85 : 1.05);
+    });
+
+    coastlines.forEach((line) => drawProjectedPath(line, '#00d8ff', 1.35, 0.82));
+    routes.forEach((route) => drawRoute(route, seconds));
+
+    ctx.save();
+    ctx.globalAlpha = 0.22;
+    ctx.strokeStyle = '#64d2ff';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius * 1.06, -0.2 + seconds * 0.18, 0.9 + seconds * 0.18);
+    ctx.stroke();
+    ctx.restore();
+
+    window.requestAnimationFrame(drawFrame);
+  }
+
+  function updatePointer(event) {
+    const rect = panel.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    targetX = ((event.clientX - rect.left) / rect.width - 0.5) * 18;
+    targetY = ((event.clientY - rect.top) / rect.height - 0.5) * -10;
+  }
+
+  window.addEventListener('pointermove', updatePointer, { passive: true });
+  window.addEventListener('resize', resize, { passive: true });
+  window.requestAnimationFrame(drawFrame);
 }
 
 function updateClock() {
@@ -2163,6 +2512,7 @@ document.addEventListener('click', (event) => {
 
 updateClock();
 renderQuickCities();
+startHolographicEarth();
 setInterval(updateClock, 30000);
 showSearchView();
 </script>
