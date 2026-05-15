@@ -1468,6 +1468,7 @@ let currentSuggestions = [];
 let activeIndex = -1;
 let debounceTimer = null;
 let searchToken = 0;
+let placeToken = 0;
 
 function escapeHTML(value) {
   return String(value ?? '').replace(/[&<>"']/g, (char) => ({
@@ -1921,6 +1922,28 @@ function setError(message) {
   placeWeather.textContent = '暂不可用';
 }
 
+function requestOrder(proxyUrl, directUrl) {
+  const isNetlify = /\.netlify\.app$/i.test(window.location.hostname);
+  return isNetlify ? [proxyUrl, directUrl] : [directUrl, proxyUrl];
+}
+
+async function fetchJSONFrom(urls, message) {
+  let lastError = null;
+  for (const url of urls) {
+    try {
+      const controller = window.AbortController ? new AbortController() : null;
+      const timer = controller ? window.setTimeout(() => controller.abort(), 12000) : null;
+      const resp = await fetch(url, controller ? { signal: controller.signal } : undefined);
+      if (timer) window.clearTimeout(timer);
+      if (!resp.ok) throw new Error(`${message}: ${resp.status}`);
+      return await resp.json();
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw lastError || new Error(message);
+}
+
 async function searchPlaces(query) {
   const providers = [
     async () => {
@@ -1931,9 +1954,10 @@ async function searchPlaces(query) {
         format: 'json',
         country_code: 'CN'
       });
-      const resp = await fetch(`https://geocoding-api.open-meteo.com/v1/search?${params}`);
-      if (!resp.ok) throw new Error('Open-Meteo 地名搜索失败');
-      const data = await resp.json();
+      const data = await fetchJSONFrom(requestOrder(
+        `/api/geocode?${params}`,
+        `https://geocoding-api.open-meteo.com/v1/search?${params}`
+      ), 'Open-Meteo 地名搜索失败');
       return (data.results || [])
         .filter((item) => {
           const code = (item.country_code || '').toLowerCase();
@@ -2086,9 +2110,10 @@ async function fetchWeatherData(place) {
     timezone: 'auto',
     forecast_days: '7'
   });
-  const resp = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
-  if (!resp.ok) throw new Error('天气接口失败');
-  return resp.json();
+  return fetchJSONFrom(requestOrder(
+    `/api/weather?${params}`,
+    `https://api.open-meteo.com/v1/forecast?${params}`
+  ), '天气接口失败');
 }
 
 async function fetchWikiImages(query) {
@@ -2199,6 +2224,7 @@ async function findSceneryImage(place) {
 
 async function selectPlace(place) {
   const normalized = await reverseChinesePlace(place);
+  const token = ++placeToken;
   hideSuggestions();
   searchInput.value = normalized.name;
   clearBtn.classList.add('visible');
@@ -2206,15 +2232,17 @@ async function selectPlace(place) {
   showDetailView();
 
   try {
-    const [weatherResult, imageResult] = await Promise.allSettled([
-      fetchWeatherData(normalized),
-      findSceneryImage(normalized)
-    ]);
+    const weatherData = await fetchWeatherData(normalized);
+    if (token !== placeToken) return;
+    renderWeather(weatherData, normalized, null);
 
-    if (weatherResult.status !== 'fulfilled') throw weatherResult.reason;
-    const imageUrl = imageResult.status === 'fulfilled' ? imageResult.value : null;
-    renderWeather(weatherResult.value, normalized, imageUrl);
+    findSceneryImage(normalized).then((imageUrl) => {
+      if (token !== placeToken || !imageUrl) return;
+      setHeroImage(imageUrl);
+      setBackdropImage(imageUrl);
+    }).catch(() => {});
   } catch (error) {
+    if (token !== placeToken) return;
     setError('请检查网络连接，或者换一个更明确的地名。');
   }
 }
