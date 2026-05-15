@@ -852,12 +852,69 @@
     min-height: 74px;
     padding: 14px;
     display: grid;
-    gap: 7px;
+    grid-template-columns: 38px 1fr;
+    align-items: center;
+    gap: 12px;
   }
 
-  .tip strong {
+  .tip-icon {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--line);
+    font-size: 20px;
+  }
+
+  .tip strong,
+  .food-card strong {
+    display: block;
     font-size: 15px;
     line-height: 1.36;
+  }
+
+  .tip p,
+  .food-card p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .food-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .food-card {
+    min-height: 88px;
+    display: grid;
+    grid-template-columns: 58px 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(245, 245, 247, 0.70)),
+      var(--food-tint, rgba(0, 113, 227, 0.08));
+  }
+
+  .food-illustration {
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    border-radius: 20px 20px 24px 18px;
+    background:
+      radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.92), transparent 30%),
+      var(--food-color, #ffd60a);
+    box-shadow: inset 0 -8px 18px rgba(0, 0, 0, 0.08), 0 8px 18px rgba(0, 0, 0, 0.08);
+    font-size: 30px;
+    transform: rotate(-3deg);
   }
 
   .state-panel {
@@ -1108,6 +1165,11 @@
             <h3 class="panel-title">出行提醒</h3>
             <div class="tips-list" id="tipsList"></div>
           </section>
+
+          <section class="panel" id="foodPanel">
+            <h3 class="panel-title">当地美食</h3>
+            <div class="food-grid" id="foodList"></div>
+          </section>
         </aside>
       </div>
     </div>
@@ -1144,6 +1206,7 @@ const storyLandmark = $('storyLandmark');
 const storyMood = $('storyMood');
 const storyGeo = $('storyGeo');
 const tipsList = $('tipsList');
+const foodList = $('foodList');
 
 const quickCities = ['北京', '上海', '杭州', '成都', '重庆', '厦门', '西安', '广州', '苏州', '昆明'];
 
@@ -1259,6 +1322,69 @@ const cityProfiles = {
   }
 };
 
+const foodProfiles = {
+  '北京': [
+    { name: '北京烤鸭', icon: '🥢', note: '晴冷天最适合热乎乎地坐下来吃。', color: '#ff9f0a' },
+    { name: '炸酱面', icon: '🍜', note: '风大或赶路时，简单扎实的一碗。', color: '#bf7a00' },
+    { name: '豆汁儿焦圈', icon: '🥣', note: '想体验本地味道，可以从这一口开始。', color: '#8fd694' }
+  ],
+  '上海': [
+    { name: '生煎', icon: '🥟', note: '雨天路面发亮时，热气和街灯很搭。', color: '#ffcc00' },
+    { name: '小笼包', icon: '🥢', note: '适合慢一点吃，也适合慢一点逛。', color: '#ff9f0a' },
+    { name: '葱油拌面', icon: '🍜', note: '晴天或阴天都很稳的一份本地日常。', color: '#34c759' }
+  ],
+  '杭州': [
+    { name: '片儿川', icon: '🍜', note: '湖边起风时，一碗面会让路线更温柔。', color: '#30d158' },
+    { name: '龙井虾仁', icon: '🍵', note: '晴朗日子里更显清爽。', color: '#64d2ff' },
+    { name: '定胜糕', icon: '🍡', note: '走累了，甜一点也很杭州。', color: '#ff7eb6' }
+  ],
+  '成都': [
+    { name: '担担面', icon: '🍜', note: '阴天或小雨时，香气会把节奏拉回来。', color: '#ff453a' },
+    { name: '火锅', icon: '🍲', note: '降温、下雨、夜晚都很合适。', color: '#ff9f0a' },
+    { name: '甜水面', icon: '🥢', note: '湿度高的时候，来点甜辣很醒神。', color: '#bf5af2' }
+  ],
+  '重庆': [
+    { name: '重庆小面', icon: '🍜', note: '雨雾天也能把人叫醒。', color: '#ff453a' },
+    { name: '酸辣粉', icon: '🥣', note: '潮湿天气里很有存在感。', color: '#ff9f0a' },
+    { name: '山城火锅', icon: '🍲', note: '夜景亮起来之后更适合。', color: '#ff375f' }
+  ],
+  '厦门': [
+    { name: '沙茶面', icon: '🍜', note: '海风天里，一碗汤面很贴心。', color: '#ff9f0a' },
+    { name: '海蛎煎', icon: '🍳', note: '阵雨过后，街巷小吃更有现场感。', color: '#64d2ff' },
+    { name: '花生汤', icon: '🥣', note: '晴天逛累后，甜热都刚好。', color: '#ffd60a' }
+  ],
+  '西安': [
+    { name: '肉夹馍', icon: '🥙', note: '风大时拿在手里也能继续走。', color: '#ff9f0a' },
+    { name: '油泼面', icon: '🍜', note: '降温时尤其有安定感。', color: '#ff453a' },
+    { name: '凉皮', icon: '🥗', note: '热天或日照强时更清爽。', color: '#30d158' }
+  ],
+  '广州': [
+    { name: '早茶', icon: '🥢', note: '湿热天适合把早晨过得慢一点。', color: '#ffcc00' },
+    { name: '肠粉', icon: '🍽️', note: '阵雨前后，轻一点更舒服。', color: '#64d2ff' },
+    { name: '云吞面', icon: '🍜', note: '江风起来时，一碗汤面很稳。', color: '#30d158' }
+  ],
+  '苏州': [
+    { name: '苏式汤面', icon: '🍜', note: '细雨天最有江南味。', color: '#64d2ff' },
+    { name: '桂花糖藕', icon: '🍮', note: '晴天园林走累后，甜一点。', color: '#ff7eb6' },
+    { name: '蟹粉小笼', icon: '🥟', note: '适合慢慢吃，也适合慢慢看水面。', color: '#ff9f0a' }
+  ],
+  '昆明': [
+    { name: '过桥米线', icon: '🍜', note: '风和日照都明显时，一碗热汤很舒服。', color: '#ff9f0a' },
+    { name: '鲜花饼', icon: '🌸', note: '晴天的城市气味，很适合这一口。', color: '#ff7eb6' },
+    { name: '汽锅鸡', icon: '🍲', note: '早晚凉的时候更合适。', color: '#64d2ff' }
+  ],
+  '南京': [
+    { name: '鸭血粉丝汤', icon: '🥣', note: '阴冷或小雨时，热汤更懂城市。', color: '#ff9f0a' },
+    { name: '盐水鸭', icon: '🥢', note: '晴天走街串巷后很适合。', color: '#64d2ff' },
+    { name: '梅花糕', icon: '🍮', note: '甜香适合慢慢逛到傍晚。', color: '#ff7eb6' }
+  ],
+  '武汉': [
+    { name: '热干面', icon: '🍜', note: '湿热天也很有精神。', color: '#ff9f0a' },
+    { name: '豆皮', icon: '🥢', note: '赶路前吃一份，很有底气。', color: '#ffd60a' },
+    { name: '藕汤', icon: '🍲', note: '风从江边过来时，热汤很合拍。', color: '#30d158' }
+  ]
+};
+
 const placeCache = new Map();
 const imageCache = new Map();
 const lastImageCache = new Map();
@@ -1352,6 +1478,15 @@ function profileFor(place) {
   };
 }
 
+function foodsFor(place) {
+  const cleanName = cleanCityName(place.name);
+  return foodProfiles[cleanName] || [
+    { name: `${cleanName || place.name}小吃`, icon: '🥢', note: '跟着本地街巷走，通常会遇到更真实的味道。', color: '#64d2ff' },
+    { name: '热汤面', icon: '🍜', note: '降温、下雨或风大时都很稳。', color: '#ff9f0a' },
+    { name: '甜点茶饮', icon: '🍵', note: '晴天慢逛时，适合给路线留一点余味。', color: '#30d158' }
+  ];
+}
+
 function renderQuickCities() {
   quickRow.innerHTML = quickCities
     .map((city) => `<button class="chip-btn" type="button" data-city="${escapeHTML(city)}">${escapeHTML(city)}</button>`)
@@ -1415,6 +1550,7 @@ function setLoading(place) {
   forecastList.innerHTML = '';
   hourRow.innerHTML = '';
   tipsList.innerHTML = '';
+  foodList.innerHTML = '';
   weatherPanel.innerHTML = `
     <div class="state-panel">
       <div>
@@ -1742,30 +1878,56 @@ function makeTips(data) {
   const rain = Math.max(...(daily.precipitation_probability_max || [0]).slice(0, 2));
   const uv = Math.round(daily.uv_index_max?.[0] || 0);
   const wind = Math.round(current.wind_speed_10m || 0);
+  const humidity = Math.round(current.relative_humidity_2m || 0);
+  const cloud = Math.round(current.cloud_cover || 0);
+  const code = Number(current.weather_code);
+  const isDay = current.is_day !== 0;
   const tips = [];
 
-  if (temp >= 30 || apparent >= 32) {
-    tips.push(['热感明显', '把户外行程放在早晚，正午留给室内和阴凉处。']);
-  } else if (temp <= 5 || apparent <= 3) {
-    tips.push(['低温体感', '风口和桥面会更冷，外套、围巾和热饮都很实用。']);
-  } else {
-    tips.push(['温度舒适', '适合慢走和拍照，留意早晚温差就好。']);
+  const addTip = (icon, title, body) => {
+    if (!tips.some((tip) => tip.title === title)) tips.push({ icon, title, body });
+  };
+
+  if ([95, 96, 99].includes(code)) {
+    addTip('⛈️', '雷暴优先避让', '减少开阔地和高处停留，室外行程改成室内更稳。');
+  } else if ([71, 73, 75, 77, 85, 86].includes(code)) {
+    addTip('❄️', '雪天慢行', '鞋底防滑比路线更重要，桥面、台阶和阴影处要放慢。');
+  } else if ([45, 48].includes(code)) {
+    addTip('🌫️', '能见度偏低', '拍照会很有氛围，但过街、骑行和上桥时要多留余量。');
+  } else if ([61, 63, 65, 80, 81, 82].includes(code) || rain >= 65 || current.precipitation > 0) {
+    addTip('🌧️', '雨具放手边', '路线选地铁口、骑楼或商场串联，路面反光适合看夜景。');
+  } else if ([51, 53, 55, 56, 57].includes(code) || rain >= 35) {
+    addTip('🌦️', '可能有零散降水', '安排可进可退的路线，阵雨前后的天空常常更有层次。');
+  } else if (code === 0 && cloud < 35) {
+    addTip('☀️', '视野很清楚', '适合把观景台、湖边或城市轴线放进行程。');
+  } else if (cloud >= 75) {
+    addTip('☁️', '光线柔和', '适合街巷、园林和建筑细节，正午也不容易过曝。');
   }
 
-  if (rain >= 60 || current.precipitation > 0) {
-    tips.push(['降水概率高', '雨具放在顺手的位置，路面反光会让夜景更好看。']);
-  } else if (rain >= 30) {
-    tips.push(['可能有雨', '安排可进可退的路线，阵雨前后的天空常常很有层次。']);
+  if (temp >= 32 || apparent >= 35) {
+    addTip('🧊', '热感很强', '户外放在早晚，正午留给室内、树荫和补水。');
+  } else if (temp >= 28 && humidity >= 75) {
+    addTip('💧', '湿热明显', '少走暴晒长线，多选有空调或树荫的中途停靠点。');
+  } else if (temp <= 3 || apparent <= 0) {
+    addTip('🧣', '低温防风', '风口、江边和高架处会更冷，手套围巾比想象中有用。');
+  } else if (temp <= 10 || apparent <= 8) {
+    addTip('🧥', '早晚偏冷', '白天可以轻装，傍晚后外套要跟上。');
   } else {
-    tips.push(['降水较少', '城市轮廓更容易看清，适合安排开阔视野的地点。']);
+    addTip('🚶', '体感适合步行', '可以把路线拉长一点，留一段给随手拍和慢走。');
   }
 
-  if (uv >= 7) {
-    tips.push(['紫外线偏强', '帽子、防晒和补水不要省，亮色地面会增强反射。']);
-  } else if (wind >= 28) {
-    tips.push(['风力偏大', '江边、湖边和高处体感更明显，轻便物品要收好。']);
-  } else {
-    tips.push(['节奏平稳', '天气没有明显阻碍，适合把路线拉长一点。']);
+  if (wind >= 38) {
+    addTip('🌬️', '风力很强', '江边、海边和高处先降级，轻便物品收进包里。');
+  } else if (wind >= 24) {
+    addTip('🍃', '风感明显', '骑行和长桥路线会更费力，拍照时注意衣物和头发。');
+  }
+
+  if (isDay && uv >= 8) {
+    addTip('🧴', '紫外线强', '防晒、帽子和墨镜都值得带，水面和浅色地面会反光。');
+  } else if (!isDay) {
+    addTip('🌙', '夜间出行', '温度会下探一点，夜景路线注意末班交通。');
+  } else if (humidity >= 85 && temp >= 22) {
+    addTip('🫧', '空气潮湿', '衣物选轻薄速干，长时间步行会更闷。');
   }
 
   return tips.slice(0, 3);
@@ -1833,6 +1995,7 @@ function renderWeather(data, place, imageUrl) {
   renderForecast(daily);
   renderHourly(data.hourly);
   renderTips(makeTips(data));
+  renderFoods(place, data);
 }
 
 function renderForecast(daily) {
@@ -1878,12 +2041,42 @@ function renderHourly(hourly) {
 }
 
 function renderTips(tips) {
-  tipsList.innerHTML = tips.map(([title, body]) => `
+  tipsList.innerHTML = tips.map((tip) => `
     <div class="tip">
-      <span>${escapeHTML(title)}</span>
-      <strong>${escapeHTML(body)}</strong>
+      <div class="tip-icon" aria-hidden="true">${escapeHTML(tip.icon)}</div>
+      <div>
+        <span>${escapeHTML(tip.title)}</span>
+        <strong>${escapeHTML(tip.body)}</strong>
+      </div>
     </div>
   `).join('');
+}
+
+function renderFoods(place, data) {
+  const current = data.current || {};
+  const isRainy = Number(current.precipitation || 0) > 0 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(Number(current.weather_code));
+  const temp = Math.round(current.temperature_2m || 0);
+  const foods = foodsFor(place);
+  const ordered = shuffled(foods).slice(0, 3);
+
+  foodList.innerHTML = ordered.map((food, index) => {
+    const weatherNote = index === 0 && isRainy
+      ? '雨天推荐'
+      : index === 0 && temp >= 28
+        ? '热天推荐'
+        : index === 0 && temp <= 10
+          ? '冷天推荐'
+          : '本地味道';
+    return `
+      <div class="food-card" style="--food-color:${escapeHTML(food.color)}; --food-tint:${escapeHTML(food.color)}22;">
+        <div class="food-illustration" aria-hidden="true">${escapeHTML(food.icon)}</div>
+        <div>
+          <span>${escapeHTML(weatherNote)}</span>
+          <strong>${escapeHTML(food.name)}</strong>
+          <p>${escapeHTML(food.note)}</p>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 searchInput.addEventListener('input', () => {
