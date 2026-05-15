@@ -2220,66 +2220,122 @@ async function selectPlace(place) {
 }
 
 function makeTips(data) {
-  const current = data.current;
-  const daily = data.daily;
-  const temp = Math.round(current.temperature_2m);
-  const apparent = Math.round(current.apparent_temperature);
-  const rain = Math.max(...(daily.precipitation_probability_max || [0]).slice(0, 2));
-  const uv = Math.round(daily.uv_index_max?.[0] || 0);
-  const wind = Math.round(current.wind_speed_10m || 0);
-  const humidity = Math.round(current.relative_humidity_2m || 0);
-  const cloud = Math.round(current.cloud_cover || 0);
-  const code = Number(current.weather_code);
-  const isDay = current.is_day !== 0;
-  const tips = [];
+  const current = data.current || {};
+  const daily = data.daily || {};
+  const hourly = data.hourly || {};
+  const asNumber = (value, fallback = 0) => {
+    const next = Number(value);
+    return Number.isFinite(next) ? next : fallback;
+  };
+  const round = (value, fallback = 0) => Math.round(asNumber(value, fallback));
+  const maxValue = (values, fallback = 0) => values.reduce((max, value) => Math.max(max, asNumber(value, fallback)), fallback);
+  const includesCode = (codes, value) => codes.includes(Number(value));
 
-  const addTip = (icon, title, body) => {
-    if (!tips.some((tip) => tip.title === title)) tips.push({ icon, title, body });
+  const code = Number(current.weather_code);
+  const info = weatherInfo(code);
+  const temp = round(current.temperature_2m);
+  const apparent = round(current.apparent_temperature, temp);
+  const precipitation = asNumber(current.precipitation);
+  const todayRain = round(daily.precipitation_probability_max?.[0]);
+  const tomorrowRain = round(daily.precipitation_probability_max?.[1]);
+  const uv = round(daily.uv_index_max?.[0]);
+  const wind = round(current.wind_speed_10m);
+  const humidity = round(current.relative_humidity_2m);
+  const cloud = round(current.cloud_cover);
+  const todayHigh = round(daily.temperature_2m_max?.[0], temp);
+  const todayLow = round(daily.temperature_2m_min?.[0], temp);
+  const isDay = current.is_day !== 0;
+
+  const hourlyTime = Array.isArray(hourly.time) ? hourly.time : [];
+  const startIndex = hourlyTime.length
+    ? Math.max(0, hourlyTime.findIndex((time) => new Date(time).getTime() >= Date.now() - 60 * 60 * 1000))
+    : 0;
+  const nextIndexes = hourlyTime.slice(startIndex, startIndex + 6).map((_, index) => startIndex + index);
+  const nextRain = Math.max(todayRain, maxValue(nextIndexes.map((index) => hourly.precipitation_probability?.[index])));
+  const nextWind = Math.max(wind, maxValue(nextIndexes.map((index) => hourly.wind_speed_10m?.[index])));
+  const nextCodes = nextIndexes.map((index) => Number(hourly.weather_code?.[index])).filter(Number.isFinite);
+
+  const thunderCodes = [95, 96, 99];
+  const snowCodes = [71, 73, 75, 77, 85, 86];
+  const freezingCodes = [56, 57, 66, 67];
+  const fogCodes = [45, 48];
+  const rainCodes = [61, 63, 65, 80, 81, 82];
+  const drizzleCodes = [51, 53, 55];
+  const cloudyCodes = [2, 3];
+  const hasNext = (codes) => nextCodes.some((nextCode) => includesCode(codes, nextCode));
+  const rainyNow = precipitation > 0 || includesCode(rainCodes, code);
+  const drizzleNow = includesCode(drizzleCodes, code);
+
+  const tips = [];
+  const used = new Set();
+  const addTip = (score, icon, title, body, key = title) => {
+    if (used.has(key)) return;
+    used.add(key);
+    tips.push({ score, icon, title, body });
   };
 
-  if ([95, 96, 99].includes(code)) {
-    addTip('⛈️', '雷暴优先避让', '减少开阔地和高处停留，室外行程改成室内更稳。');
-  } else if ([71, 73, 75, 77, 85, 86].includes(code)) {
-    addTip('❄️', '雪天慢行', '鞋底防滑比路线更重要，桥面、台阶和阴影处要放慢。');
-  } else if ([45, 48].includes(code)) {
-    addTip('🌫️', '能见度偏低', '拍照会很有氛围，但过街、骑行和上桥时要多留余量。');
-  } else if ([61, 63, 65, 80, 81, 82].includes(code) || rain >= 65 || current.precipitation > 0) {
-    addTip('🌧️', '雨具放手边', '路线选地铁口、骑楼或商场串联，路面反光适合看夜景。');
-  } else if ([51, 53, 55, 56, 57].includes(code) || rain >= 35) {
-    addTip('🌦️', '可能有零散降水', '安排可进可退的路线，阵雨前后的天空常常更有层次。');
+  if (includesCode(thunderCodes, code) || hasNext(thunderCodes)) {
+    addTip(100, '⛈️', `雷暴提醒 · ${info.label}`, '先取消开阔地、高处和水边行程，优先选商场、博物馆、地铁沿线等室内路线。', 'storm');
+  } else if (includesCode(freezingCodes, code)) {
+    addTip(98, '🧊', `冻雨提醒 · 体感${apparent}°C`, '路面、台阶和桥面可能很滑，步行放慢，骑行和电动车路线建议直接降级。', 'iceRain');
+  } else if (includesCode(snowCodes, code) || hasNext(snowCodes)) {
+    addTip(96, '❄️', `雪天提醒 · ${info.label}`, '鞋底防滑比路线更重要，桥面、台阶和阴影处留余量，景点之间别排太满。', 'snow');
+  } else if (includesCode(fogCodes, code)) {
+    addTip(92, '🌫️', `低能见度 · 云量${cloud}%`, '过街、上桥和骑行都要多留反应距离；观景台可以后移，街巷近景更适合。', 'fog');
+  } else if (rainyNow) {
+    addTip(90, '🌧️', `正在降水 · ${nextRain}%概率`, '伞和防水鞋放第一优先级，路线尽量串联地铁口、骑楼、商场和可避雨街区。', 'rain');
+  } else if (nextRain >= 65 || hasNext(rainCodes)) {
+    addTip(86, '🌦️', `雨在路上 · 未来6小时${nextRain}%`, '先走户外段，把室内餐厅、展馆或商场放到后半程，避免被阵雨截在半路。', 'rain');
+  } else if (drizzleNow || nextRain >= 35 || Math.max(todayRain, tomorrowRain) >= 45) {
+    addTip(78, '☔', `可能飘雨 · 最高${Math.max(todayRain, nextRain)}%`, '带一把轻便伞，安排可进可退的路线；雨后天空和地面反光会更好看。', 'drizzle');
   } else if (code === 0 && cloud < 35) {
-    addTip('☀️', '视野很清楚', '适合把观景台、湖边或城市轴线放进行程。');
-  } else if (cloud >= 75) {
-    addTip('☁️', '光线柔和', '适合街巷、园林和建筑细节，正午也不容易过曝。');
-  }
-
-  if (temp >= 32 || apparent >= 35) {
-    addTip('🧊', '热感很强', '户外放在早晚，正午留给室内、树荫和补水。');
-  } else if (temp >= 28 && humidity >= 75) {
-    addTip('💧', '湿热明显', '少走暴晒长线，多选有空调或树荫的中途停靠点。');
-  } else if (temp <= 3 || apparent <= 0) {
-    addTip('🧣', '低温防风', '风口、江边和高架处会更冷，手套围巾比想象中有用。');
-  } else if (temp <= 10 || apparent <= 8) {
-    addTip('🧥', '早晚偏冷', '白天可以轻装，傍晚后外套要跟上。');
+    addTip(56, '☀️', `晴朗适合远眺 · 云量${cloud}%`, '观景台、江边、湖边和城市轴线可以放进日程，拍远景会更干净。', 'clear');
+  } else if (includesCode(cloudyCodes, code) || cloud >= 70) {
+    addTip(52, '☁️', `云层较厚 · 云量${cloud}%`, '光线柔和，适合街巷、园林、建筑细节和长时间步行，正午也不容易刺眼。', 'cloud');
   } else {
-    addTip('🚶', '体感适合步行', '可以把路线拉长一点，留一段给随手拍和慢走。');
+    addTip(48, info.icon, `${info.label}出行`, '天气变化不算激烈，路线可以按兴趣展开，给临时停留和拍照留一点空档。', 'mildWeather');
   }
 
-  if (wind >= 38) {
-    addTip('🌬️', '风力很强', '江边、海边和高处先降级，轻便物品收进包里。');
-  } else if (wind >= 24) {
-    addTip('🍃', '风感明显', '骑行和长桥路线会更费力，拍照时注意衣物和头发。');
+  if (apparent >= 38) {
+    addTip(88, '🥵', `体感过热 · ${apparent}°C`, '正午户外压缩到短距离，补水、防晒和空调休息点要提前安排好。', 'temperature');
+  } else if (temp >= 32 || apparent >= 35) {
+    addTip(82, '🧊', `高温提醒 · ${temp}°C`, '户外放在早晚，午后改成室内或树荫路线，随身带水比多走一个点更重要。', 'temperature');
+  } else if (temp >= 28 && humidity >= 75) {
+    addTip(76, '💧', `湿热明显 · 湿度${humidity}%`, '减少暴晒长线，选有空调、树荫或水边风口的中途停靠点。', 'temperature');
+  } else if (apparent <= 0 || temp <= 3) {
+    addTip(84, '🧣', `低温防风 · 体感${apparent}°C`, '风口、江边和高架处会更冷，手套、围巾和暖鞋比厚外套更关键。', 'temperature');
+  } else if (temp <= 10 || todayLow <= 8) {
+    addTip(70, '🧥', `早晚偏冷 · 最低${todayLow}°C`, '白天可以轻装一点，但傍晚后外套要跟上，夜景路线别排太晚。', 'temperature');
+  } else if (todayHigh - todayLow >= 10) {
+    addTip(62, '🧢', `温差较大 · ${todayLow}°/${todayHigh}°`, '采用薄外套叠穿，上午和傍晚多一层，午后可以轻装走。', 'temperature');
+  } else {
+    addTip(42, '🚶', `体感舒适 · ${apparent}°C`, '适合把步行段拉长一点，留一段给慢走、随手拍和临时绕路。', 'temperature');
+  }
+
+  if (nextWind >= 38) {
+    addTip(86, '🌬️', `强风提醒 · ${Math.round(nextWind)} km/h`, '海边、江边、高处和长桥路线先降级，帽子、伞和轻便物品收进包里。', 'wind');
+  } else if (nextWind >= 24) {
+    addTip(66, '🍃', `风感明显 · ${Math.round(nextWind)} km/h`, '骑行、长桥和开阔广场会更费力，拍照时注意衣物和头发被风影响。', 'wind');
+  }
+
+  if (!rainyNow && nextRain >= 50) {
+    addTip(74, '⏱️', `先户外后室内 · ${nextRain}%雨`, '把户外打卡点提前，餐饮、购物或展馆放在降水概率更高的时段。', 'rainTiming');
   }
 
   if (isDay && uv >= 8) {
-    addTip('🧴', '紫外线强', '防晒、帽子和墨镜都值得带，水面和浅色地面会反光。');
+    addTip(72, '🧴', `紫外线强 · 指数${uv}`, '防晒、帽子和墨镜都值得带，水面、浅色地面和玻璃幕墙会加倍反光。', 'uv');
+  } else if (isDay && uv >= 5 && code === 0) {
+    addTip(55, '🕶️', `日照明显 · 指数${uv}`, '长时间户外记得补防晒，观景和拍照更适合避开正午顶光。', 'uv');
   } else if (!isDay) {
-    addTip('🌙', '夜间出行', '温度会下探一点，夜景路线注意末班交通。');
+    addTip(60, '🌙', `夜间出行 · 体感${apparent}°C`, '温度会继续下探，夜景路线注意末班交通，返程别只看距离。', 'night');
   } else if (humidity >= 85 && temp >= 22) {
-    addTip('🫧', '空气潮湿', '衣物选轻薄速干，长时间步行会更闷。');
+    addTip(54, '🫧', `空气潮湿 · 湿度${humidity}%`, '衣物选轻薄速干，长时间步行会更闷，包里留纸巾或小毛巾。', 'humidity');
   }
 
-  return tips.slice(0, 3);
+  return tips
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map(({ icon, title, body }) => ({ icon, title, body }));
 }
 
 function renderWeather(data, place, imageUrl) {
