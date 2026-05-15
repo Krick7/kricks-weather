@@ -3,44 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Krick's Weather 是一张城市天气明信片，手机打开即可搜索城市、查看实时天气、七日趋势、出行提醒和代表景色。">
-<meta name="theme-color" content="#e7eef0">
+<meta name="description" content="Krick's Weather 是一张清爽的城市天气卡片，手机打开即可搜索城市、查看实时天气、七日趋势、出行提醒和代表景色。">
+<meta name="theme-color" content="#f5f5f7">
 <meta name="format-detection" content="telephone=no">
-<meta property="og:title" content="Krick's Weather · 城市天气明信片">
-<meta property="og:description" content="搜索一座城，看见它的天气、趋势、出行提醒和代表景色。">
+<meta property="og:title" content="Krick's Weather">
+<meta property="og:description" content="搜索一座城，看见天气、趋势、出行提醒和代表景色。">
 <meta property="og:type" content="website">
-<title>Krick's Weather · 城市天气明信片</title>
+<meta property="og:url" content="https://krick7.github.io/kricks-weather/">
+<title>Krick's Weather</title>
 <style>
   * { box-sizing: border-box; }
 
   :root {
-    --ink: #182027;
-    --ink-soft: rgba(24, 32, 39, 0.68);
-    --ink-faint: rgba(24, 32, 39, 0.48);
-    --surface: rgba(255, 255, 255, 0.78);
-    --surface-strong: rgba(255, 255, 255, 0.94);
-    --line: rgba(24, 32, 39, 0.10);
-    --glass-line: rgba(255, 255, 255, 0.62);
-    --coral: #ec705c;
-    --teal: #2f9f93;
-    --saffron: #e1a337;
-    --sky: #5a8fd8;
-    --plum: #6d5aa8;
-    --shadow: 0 24px 70px rgba(25, 35, 44, 0.16);
+    --ink: #1d1d1f;
+    --muted: #6e6e73;
+    --soft: #86868b;
+    --blue: #0071e3;
+    --blue-strong: #005bbf;
+    --green: #2ea043;
+    --orange: #bf7a00;
+    --paper: rgba(255, 255, 255, 0.82);
+    --paper-strong: rgba(255, 255, 255, 0.94);
+    --line: rgba(0, 0, 0, 0.08);
+    --line-strong: rgba(0, 0, 0, 0.14);
+    --shadow: 0 24px 70px rgba(0, 0, 0, 0.10);
+    --radius-lg: 30px;
+    --radius-md: 22px;
+    --radius-sm: 14px;
   }
 
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
 
   body {
     min-height: 100vh;
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
     color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
     background:
-      linear-gradient(135deg, rgba(255, 255, 255, 0.66) 0%, rgba(225, 239, 239, 0.88) 34%, rgba(252, 241, 224, 0.88) 100%),
-      repeating-linear-gradient(90deg, rgba(24, 32, 39, 0.025) 0 1px, transparent 1px 84px),
-      repeating-linear-gradient(0deg, rgba(24, 32, 39, 0.022) 0 1px, transparent 1px 84px),
-      #e7eef0;
+      linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(245, 245, 247, 0.96) 34%, #f5f5f7 100%),
+      linear-gradient(135deg, rgba(0, 113, 227, 0.12), transparent 42%, rgba(52, 199, 89, 0.10));
     overflow-x: hidden;
   }
 
@@ -53,15 +58,15 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  .backdrop {
+  .ambient {
     position: fixed;
     inset: 0;
-    z-index: -3;
-    overflow: hidden;
+    z-index: -2;
     pointer-events: none;
+    overflow: hidden;
   }
 
-  .backdrop::before {
+  .ambient::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -69,53 +74,64 @@
     background-size: cover;
     background-position: center;
     opacity: var(--place-opacity, 0);
+    filter: saturate(1.02);
     transform: scale(1.04);
-    filter: saturate(1.03);
-    transition: opacity 850ms ease, transform 1200ms ease;
+    transition: opacity 900ms ease;
   }
 
-  .backdrop::after {
+  .ambient::after {
     content: "";
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(180deg, rgba(248, 251, 250, 0.78) 0%, rgba(248, 251, 250, 0.38) 42%, rgba(248, 251, 250, 0.86) 100%),
-      linear-gradient(125deg, rgba(47, 159, 147, 0.15), transparent 40%, rgba(236, 112, 92, 0.16));
-    backdrop-filter: blur(2px) saturate(1.08);
+      linear-gradient(180deg, rgba(245, 245, 247, 0.76), rgba(245, 245, 247, 0.42) 42%, #f5f5f7 100%),
+      linear-gradient(110deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.42));
+    backdrop-filter: blur(18px) saturate(1.08);
   }
 
   .shell {
     width: min(1180px, calc(100% - 32px));
     min-height: 100vh;
     margin: 0 auto;
-    padding: 26px 0 40px;
+    padding: 18px 0 42px;
     display: grid;
     grid-template-rows: auto 1fr;
     gap: 24px;
   }
 
   .topbar {
+    position: sticky;
+    top: 10px;
+    z-index: 40;
+    min-height: 58px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 14px;
+    padding: 9px 10px 9px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.74);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.66);
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(28px) saturate(1.28);
   }
 
   .brand {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     min-width: 0;
   }
 
   .brand-mark {
-    width: 42px;
-    height: 42px;
+    width: 36px;
+    height: 36px;
     flex: 0 0 auto;
-    border-radius: 14px;
+    border-radius: 10px;
     background:
-      linear-gradient(150deg, var(--coral), #f4c66d 48%, var(--teal));
-    box-shadow: 0 14px 30px rgba(236, 112, 92, 0.25);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.54), rgba(255, 255, 255, 0.12)),
+      linear-gradient(135deg, #0a84ff, #64d2ff 46%, #30d158);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42), 0 8px 20px rgba(0, 113, 227, 0.24);
     position: relative;
     overflow: hidden;
   }
@@ -125,172 +141,155 @@
     position: absolute;
     left: 9px;
     right: 9px;
-    bottom: 10px;
-    height: 5px;
-    border-radius: 99px;
-    background: rgba(255, 255, 255, 0.76);
-    box-shadow: 0 -9px 0 rgba(255, 255, 255, 0.42);
+    bottom: 9px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 -8px 0 rgba(255, 255, 255, 0.36);
   }
 
   .brand-title {
     margin: 0;
-    font-size: clamp(21px, 3vw, 32px);
+    font-size: 17px;
     line-height: 1;
-    font-weight: 840;
+    font-weight: 760;
     letter-spacing: 0;
   }
 
   .brand-subtitle {
-    margin-top: 5px;
-    color: var(--ink-soft);
-    font-size: 13px;
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 12px;
   }
 
   .top-actions {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
   }
 
   .time-chip,
   .back-btn {
-    min-height: 40px;
-    border: 1px solid var(--glass-line);
-    background: rgba(255, 255, 255, 0.58);
-    color: var(--ink-soft);
-    box-shadow: 0 12px 30px rgba(24, 32, 39, 0.08);
+    min-height: 38px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--muted);
     backdrop-filter: blur(18px);
   }
 
   .time-chip {
     display: inline-flex;
     align-items: center;
-    padding: 0 14px;
+    padding: 0 13px;
     border-radius: 999px;
-    font-size: 13px;
+    font-size: 12px;
     white-space: nowrap;
   }
 
   .back-btn {
     display: none;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
     padding: 0 13px;
-    border-radius: 14px;
+    border-radius: 999px;
     cursor: pointer;
   }
 
   .back-btn.visible { display: inline-flex; }
-
-  .back-btn:hover,
-  .ghost-btn:hover,
-  .primary-btn:hover,
-  .chip-btn:hover,
-  .suggestion:hover {
-    transform: translateY(-1px);
-  }
 
   .view { display: none; }
   .view.active { display: block; }
 
   .search-view {
     align-self: center;
-    min-height: calc(100vh - 128px);
+    min-height: calc(100vh - 112px);
     display: grid;
     align-items: center;
   }
 
-  .search-stage {
+  .hero-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.08fr) minmax(300px, 0.72fr);
+    grid-template-columns: minmax(0, 1.08fr) minmax(330px, 0.72fr);
     gap: clamp(18px, 4vw, 34px);
     align-items: stretch;
   }
 
-  .search-panel,
-  .weather-lens,
-  .panel,
-  .hero-card {
-    border: 1px solid var(--glass-line);
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.58));
+  .hero-copy-panel {
+    min-height: 570px;
+    padding: clamp(30px, 5vw, 58px);
+    border: 1px solid rgba(255, 255, 255, 0.74);
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.72);
     box-shadow: var(--shadow);
-    backdrop-filter: blur(26px) saturate(1.12);
-  }
-
-  .search-panel {
-    min-height: 560px;
-    padding: clamp(28px, 5vw, 54px);
-    border-radius: 30px;
+    backdrop-filter: blur(26px) saturate(1.18);
     display: flex;
     flex-direction: column;
     justify-content: center;
   }
 
   .eyebrow {
-    margin: 0 0 16px;
-    color: var(--teal);
-    font-size: 12px;
-    font-weight: 820;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+    margin: 0 0 14px;
+    color: var(--blue);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0;
   }
 
   .hero-title {
-    max-width: 760px;
+    max-width: 780px;
     margin: 0;
-    font-size: clamp(42px, 7vw, 88px);
-    line-height: 0.94;
+    font-size: clamp(46px, 7vw, 92px);
+    line-height: 0.98;
     letter-spacing: 0;
-    font-weight: 860;
+    font-weight: 800;
   }
 
   .hero-title span {
-    color: var(--coral);
+    color: var(--blue);
   }
 
-  .hero-copy {
-    max-width: 640px;
-    margin: 22px 0 30px;
-    color: var(--ink-soft);
-    font-size: 16px;
-    line-height: 1.78;
+  .hero-text {
+    max-width: 650px;
+    margin: 24px 0 30px;
+    color: var(--muted);
+    font-size: 19px;
+    line-height: 1.58;
   }
 
   .search-wrap {
     position: relative;
-    width: min(720px, 100%);
+    width: min(690px, 100%);
   }
 
   .search-box {
+    min-height: 66px;
     display: grid;
-    grid-template-columns: 46px minmax(0, 1fr) 44px 116px;
+    grid-template-columns: 42px minmax(0, 1fr) 42px 112px;
     align-items: center;
     gap: 8px;
-    min-height: 68px;
-    padding: 8px;
-    border-radius: 22px;
-    background:
-      linear-gradient(var(--surface-strong), var(--surface-strong)) padding-box,
-      linear-gradient(110deg, rgba(236, 112, 92, 0.84), rgba(47, 159, 147, 0.76), rgba(90, 143, 216, 0.56)) border-box;
-    border: 1px solid transparent;
-    box-shadow: 0 18px 45px rgba(24, 32, 39, 0.13);
-    transition: transform 180ms ease, box-shadow 180ms ease;
+    padding: 7px;
+    border: 1px solid rgba(0, 0, 0, 0.09);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.08);
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
   }
 
   .search-box:focus-within {
-    transform: translateY(-2px);
-    box-shadow: 0 28px 62px rgba(24, 32, 39, 0.18);
+    transform: translateY(-1px);
+    border-color: rgba(0, 113, 227, 0.34);
+    box-shadow: 0 18px 46px rgba(0, 113, 227, 0.14);
   }
 
   .search-symbol {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     display: grid;
     place-items: center;
-    border-radius: 15px;
-    background: rgba(47, 159, 147, 0.12);
-    color: #237f76;
-    font-size: 22px;
+    border-radius: 50%;
+    background: #f5f5f7;
+    color: var(--soft);
+    font-size: 20px;
   }
 
   .search-input {
@@ -300,15 +299,13 @@
     outline: 0;
     background: transparent;
     color: var(--ink);
-    font-size: 17px;
+    font-size: 18px;
     padding: 0 4px;
   }
 
-  .search-input::placeholder {
-    color: rgba(24, 32, 39, 0.40);
-  }
+  .search-input::placeholder { color: #98989d; }
 
-  .ghost-btn,
+  .clear-btn,
   .primary-btn,
   .chip-btn,
   .suggestion {
@@ -317,48 +314,56 @@
     transition: transform 160ms ease, background 160ms ease, opacity 160ms ease, color 160ms ease;
   }
 
-  .ghost-btn {
-    width: 44px;
-    height: 44px;
+  .clear-btn {
+    width: 40px;
+    height: 40px;
     display: grid;
     place-items: center;
-    border-radius: 15px;
-    background: rgba(24, 32, 39, 0.06);
-    color: var(--ink-soft);
-    font-size: 19px;
+    border-radius: 50%;
+    background: #f5f5f7;
+    color: var(--soft);
+    font-size: 20px;
     opacity: 0;
     pointer-events: none;
   }
 
-  .ghost-btn.visible {
+  .clear-btn.visible {
     opacity: 1;
     pointer-events: auto;
   }
 
   .primary-btn {
     height: 50px;
-    border-radius: 16px;
-    background: var(--ink);
+    border-radius: 999px;
+    background: var(--blue);
     color: #fff;
-    font-size: 14px;
-    font-weight: 800;
+    font-size: 15px;
+    font-weight: 700;
     white-space: nowrap;
-    box-shadow: 0 12px 30px rgba(24, 32, 39, 0.22);
   }
+
+  .primary-btn:hover,
+  .chip-btn:hover,
+  .back-btn:hover,
+  .clear-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .primary-btn:hover { background: var(--blue-strong); }
 
   .suggestions {
     position: absolute;
-    top: calc(100% + 12px);
+    top: calc(100% + 10px);
     left: 0;
     right: 0;
-    z-index: 20;
+    z-index: 30;
     display: none;
     max-height: 330px;
     overflow: auto;
-    border-radius: 22px;
-    border: 1px solid var(--glass-line);
+    border: 1px solid rgba(255, 255, 255, 0.78);
+    border-radius: 20px;
     background: rgba(255, 255, 255, 0.94);
-    box-shadow: 0 24px 58px rgba(24, 32, 39, 0.17);
+    box-shadow: 0 18px 54px rgba(0, 0, 0, 0.12);
     backdrop-filter: blur(24px);
   }
 
@@ -367,23 +372,23 @@
   .suggestion {
     width: 100%;
     min-height: 62px;
-    padding: 13px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 14px;
-    color: var(--ink);
+    padding: 13px 16px;
     background: transparent;
+    color: var(--ink);
     text-align: left;
-    border-bottom: 1px solid rgba(24, 32, 39, 0.07);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   }
 
   .suggestion:last-child { border-bottom: 0; }
-  .suggestion.active,
-  .suggestion:hover { background: rgba(47, 159, 147, 0.11); }
+  .suggestion:hover,
+  .suggestion.active { background: rgba(0, 113, 227, 0.08); }
   .suggestion strong { display: block; font-size: 15px; }
-  .suggestion span span { display: block; margin-top: 4px; color: var(--ink-faint); font-size: 12px; }
-  .suggestion small { color: rgba(24, 32, 39, 0.42); white-space: nowrap; }
+  .suggestion span span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+  .suggestion small { color: var(--soft); white-space: nowrap; }
 
   .quick-row {
     display: flex;
@@ -394,132 +399,139 @@
 
   .chip-btn {
     min-height: 36px;
-    padding: 0 14px;
+    padding: 0 15px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.62);
-    border: 1px solid rgba(24, 32, 39, 0.08);
-    color: var(--ink-soft);
+    background: rgba(255, 255, 255, 0.84);
+    border: 1px solid var(--line);
+    color: var(--muted);
     font-size: 14px;
   }
 
   .chip-btn:hover {
     color: var(--ink);
-    background: rgba(255, 255, 255, 0.9);
+    background: #fff;
   }
 
-  .weather-lens {
-    min-height: 560px;
-    border-radius: 30px;
+  .preview-panel {
+    min-height: 570px;
+    border: 1px solid rgba(255, 255, 255, 0.76);
+    border-radius: var(--radius-lg);
+    background:
+      linear-gradient(180deg, rgba(29, 29, 31, 0.04), rgba(29, 29, 31, 0.00)),
+      rgba(255, 255, 255, 0.62);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(26px) saturate(1.18);
     padding: 24px;
     display: grid;
     grid-template-rows: auto 1fr auto;
     gap: 18px;
     overflow: hidden;
-    position: relative;
   }
 
-  .lens-top {
+  .preview-top {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     gap: 12px;
   }
 
-  .lens-label {
-    color: var(--ink-faint);
-    font-size: 12px;
-    font-weight: 760;
-    letter-spacing: 1.6px;
-    text-transform: uppercase;
+  .preview-label {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
   }
 
-  .pulse-dot {
-    width: 10px;
-    height: 10px;
+  .signal {
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 10px;
     border-radius: 999px;
-    background: var(--teal);
-    box-shadow: 0 0 0 8px rgba(47, 159, 147, 0.12);
+    background: rgba(52, 199, 89, 0.14);
+    color: #208a3b;
+    font-size: 12px;
+    font-weight: 700;
   }
 
-  .lens-map {
-    border-radius: 24px;
-    border: 1px solid rgba(24, 32, 39, 0.08);
+  .preview-main {
+    border-radius: 26px;
+    border: 1px solid rgba(255, 255, 255, 0.76);
     background:
-      linear-gradient(150deg, rgba(47, 159, 147, 0.16), rgba(90, 143, 216, 0.13) 45%, rgba(236, 112, 92, 0.13)),
-      repeating-linear-gradient(35deg, rgba(255, 255, 255, 0.36) 0 2px, transparent 2px 18px);
+      linear-gradient(180deg, rgba(10, 132, 255, 0.18), rgba(100, 210, 255, 0.10) 48%, rgba(255, 255, 255, 0.66)),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.48));
     display: grid;
     align-content: end;
-    padding: 20px;
-    min-height: 280px;
+    min-height: 300px;
+    padding: 24px;
   }
 
-  .lens-temp {
+  .preview-temp {
     display: flex;
-    align-items: flex-end;
-    gap: 12px;
+    align-items: flex-start;
+    gap: 8px;
   }
 
-  .lens-temp strong {
-    font-size: 86px;
+  .preview-temp strong {
+    font-size: clamp(84px, 12vw, 118px);
     line-height: 0.84;
     letter-spacing: 0;
+    font-weight: 780;
   }
 
-  .lens-temp span {
-    padding-bottom: 8px;
-    color: var(--ink-soft);
-    font-weight: 760;
+  .preview-temp sup {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 30px;
+    font-weight: 700;
   }
 
-  .lens-caption {
+  .preview-copy {
+    max-width: 330px;
     margin: 14px 0 0;
-    color: var(--ink-soft);
-    line-height: 1.7;
+    color: var(--muted);
+    line-height: 1.58;
   }
 
-  .city-strip {
+  .city-stack {
     display: grid;
     gap: 10px;
   }
 
-  .city-tile {
+  .city-row {
     min-height: 58px;
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 38px 1fr auto;
     align-items: center;
     gap: 12px;
-    padding: 12px;
+    padding: 10px 12px;
     border-radius: 18px;
-    background: rgba(255, 255, 255, 0.58);
-    border: 1px solid rgba(255, 255, 255, 0.52);
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(0, 0, 0, 0.06);
   }
 
-  .city-tile i {
-    width: 34px;
-    height: 34px;
+  .city-row i {
+    width: 38px;
+    height: 38px;
     display: grid;
     place-items: center;
-    border-radius: 12px;
-    background: rgba(225, 163, 55, 0.18);
-    color: #9d6a11;
+    border-radius: 50%;
+    background: #f5f5f7;
     font-style: normal;
   }
 
-  .city-tile strong {
+  .city-row strong {
     display: block;
     font-size: 14px;
   }
 
-  .city-tile span {
+  .city-row span {
     display: block;
     margin-top: 3px;
-    color: var(--ink-faint);
+    color: var(--muted);
     font-size: 12px;
   }
 
-  .detail-view {
-    padding-bottom: 8px;
-  }
+  .detail-view { padding-bottom: 8px; }
 
   .detail-stack {
     display: grid;
@@ -528,12 +540,14 @@
 
   .hero-card {
     position: relative;
-    min-height: 430px;
-    border-radius: 30px;
+    min-height: 440px;
     overflow: hidden;
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.72);
     background:
-      linear-gradient(145deg, rgba(34, 45, 54, 0.18), rgba(34, 45, 54, 0.46)),
-      linear-gradient(135deg, rgba(47, 159, 147, 0.28), rgba(90, 143, 216, 0.20));
+      linear-gradient(135deg, rgba(10, 132, 255, 0.26), rgba(255, 255, 255, 0.42)),
+      #dbe6f3;
+    box-shadow: var(--shadow);
   }
 
   .hero-card::before {
@@ -545,7 +559,7 @@
     background-position: center;
     opacity: var(--hero-opacity, 0);
     transform: scale(1.03);
-    transition: opacity 850ms ease;
+    transition: opacity 900ms ease;
   }
 
   .hero-card::after {
@@ -553,14 +567,14 @@
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(180deg, rgba(14, 18, 22, 0.04) 0%, rgba(14, 18, 22, 0.24) 42%, rgba(14, 18, 22, 0.74) 100%);
+      linear-gradient(180deg, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.24) 48%, rgba(0, 0, 0, 0.66) 100%);
   }
 
   .hero-content {
     position: absolute;
     inset: auto 0 0;
     z-index: 1;
-    padding: clamp(22px, 4vw, 34px);
+    padding: clamp(24px, 4vw, 38px);
     color: #fff;
   }
 
@@ -573,33 +587,33 @@
   }
 
   .pill {
+    min-height: 32px;
     display: inline-flex;
     align-items: center;
-    min-height: 32px;
-    padding: 0 11px;
+    padding: 0 12px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.18);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    color: rgba(255, 255, 255, 0.90);
-    backdrop-filter: blur(14px);
+    background: rgba(255, 255, 255, 0.20);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    color: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(18px);
     font-size: 12px;
-    font-weight: 720;
+    font-weight: 700;
   }
 
   .place-title {
     margin: 0;
-    font-size: clamp(42px, 8vw, 86px);
-    line-height: 0.9;
+    font-size: clamp(46px, 8vw, 94px);
+    line-height: 0.92;
     letter-spacing: 0;
-    font-weight: 880;
+    font-weight: 820;
   }
 
   .place-copy {
     max-width: 760px;
     margin: 16px 0 0;
     color: rgba(255, 255, 255, 0.84);
-    line-height: 1.72;
-    font-size: 15px;
+    line-height: 1.62;
+    font-size: 16px;
   }
 
   .detail-grid {
@@ -611,12 +625,16 @@
   .main-column,
   .side-column {
     display: grid;
-    gap: 18px;
     align-content: start;
+    gap: 18px;
   }
 
   .panel {
-    border-radius: 26px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.76);
+    background: rgba(255, 255, 255, 0.76);
+    box-shadow: 0 16px 46px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(24px) saturate(1.16);
     padding: clamp(18px, 3vw, 26px);
   }
 
@@ -627,30 +645,30 @@
 
   .panel-head {
     display: flex;
-    align-items: flex-start;
     justify-content: space-between;
+    align-items: flex-start;
     gap: 16px;
   }
 
   .panel-title {
     margin: 0;
-    font-size: 14px;
-    color: var(--ink-faint);
-    letter-spacing: 1.4px;
-    text-transform: uppercase;
-    font-weight: 820;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 760;
+    letter-spacing: 0;
   }
 
   .location-name {
-    margin: 8px 0 0;
+    margin: 7px 0 0;
     font-size: clamp(24px, 4vw, 34px);
     line-height: 1.08;
-    font-weight: 820;
+    font-weight: 780;
+    letter-spacing: 0;
   }
 
   .location-meta {
     margin-top: 7px;
-    color: var(--ink-faint);
+    color: var(--muted);
     font-size: 13px;
   }
 
@@ -659,24 +677,24 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0 12px;
+    padding: 0 13px;
     border-radius: 999px;
-    background: rgba(47, 159, 147, 0.14);
-    color: #217b72;
+    background: rgba(0, 113, 227, 0.10);
+    color: var(--blue);
     font-size: 12px;
-    font-weight: 820;
+    font-weight: 760;
     white-space: nowrap;
   }
 
   .temperature-row {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    gap: 16px;
+    gap: 18px;
     align-items: end;
   }
 
   .weather-icon {
-    font-size: clamp(54px, 8vw, 82px);
+    font-size: clamp(56px, 8vw, 84px);
     line-height: 1;
   }
 
@@ -687,23 +705,24 @@
   }
 
   .temperature strong {
-    font-size: clamp(92px, 14vw, 148px);
+    font-size: clamp(94px, 14vw, 152px);
     line-height: 0.82;
     letter-spacing: 0;
-    font-weight: 880;
+    font-weight: 780;
   }
 
   .temperature sup {
-    margin-top: 8px;
-    color: var(--ink-faint);
+    margin-top: 9px;
+    color: var(--muted);
     font-size: clamp(24px, 4vw, 34px);
-    font-weight: 740;
+    font-weight: 700;
   }
 
   .weather-summary {
     margin: 0;
-    color: var(--ink-soft);
-    line-height: 1.72;
+    color: var(--muted);
+    line-height: 1.68;
+    font-size: 15px;
   }
 
   .metric-grid {
@@ -717,8 +736,8 @@
   .forecast-card,
   .hour-card {
     border-radius: 18px;
-    background: rgba(255, 255, 255, 0.58);
-    border: 1px solid rgba(255, 255, 255, 0.58);
+    border: 1px solid var(--line);
+    background: rgba(245, 245, 247, 0.76);
   }
 
   .metric {
@@ -734,7 +753,7 @@
   .hour-card span,
   .tip span,
   .story-label {
-    color: var(--ink-faint);
+    color: var(--muted);
     font-size: 12px;
   }
 
@@ -752,27 +771,17 @@
   }
 
   .forecast-card {
-    min-height: 138px;
+    min-height: 136px;
     padding: 12px 9px;
-    text-align: center;
     display: grid;
-    gap: 8px;
     align-content: center;
+    gap: 8px;
+    text-align: center;
   }
 
-  .forecast-card strong {
-    font-size: 14px;
-  }
-
-  .forecast-card .forecast-icon {
-    font-size: 25px;
-    line-height: 1;
-  }
-
-  .forecast-card small {
-    color: var(--ink-faint);
-    font-size: 11px;
-  }
+  .forecast-card strong { font-size: 14px; }
+  .forecast-card .forecast-icon { font-size: 25px; line-height: 1; }
+  .forecast-card small { color: var(--muted); font-size: 11px; }
 
   .hour-row {
     margin-top: 16px;
@@ -793,9 +802,7 @@
     text-align: center;
   }
 
-  .hour-card strong {
-    font-size: 18px;
-  }
+  .hour-card strong { font-size: 18px; }
 
   .story-panel {
     display: grid;
@@ -804,8 +811,8 @@
 
   .story-copy {
     margin: 8px 0 0;
-    color: var(--ink-soft);
-    line-height: 1.72;
+    color: var(--muted);
+    line-height: 1.66;
   }
 
   .story-list {
@@ -818,12 +825,10 @@
     display: grid;
     gap: 5px;
     padding: 12px 0;
-    border-top: 1px solid rgba(24, 32, 39, 0.08);
+    border-top: 1px solid var(--line);
   }
 
-  .story-item strong {
-    font-size: 16px;
-  }
+  .story-item strong { font-size: 16px; }
 
   .tips-list {
     display: grid;
@@ -840,6 +845,7 @@
 
   .tip strong {
     font-size: 15px;
+    line-height: 1.36;
   }
 
   .state-panel {
@@ -847,7 +853,7 @@
     display: grid;
     place-items: center;
     text-align: center;
-    color: var(--ink-soft);
+    color: var(--muted);
   }
 
   .state-panel strong {
@@ -862,26 +868,22 @@
     height: 46px;
     margin: 0 auto 18px;
     border-radius: 999px;
-    border: 3px solid rgba(24, 32, 39, 0.12);
-    border-top-color: var(--coral);
+    border: 3px solid rgba(0, 0, 0, 0.12);
+    border-top-color: var(--blue);
     animation: spin 760ms linear infinite;
   }
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
   @media (max-width: 980px) {
-    .search-stage,
+    .hero-grid,
     .detail-grid {
       grid-template-columns: 1fr;
     }
 
-    .search-panel,
-    .weather-lens {
+    .hero-copy-panel,
+    .preview-panel {
       min-height: auto;
-    }
-
-    .weather-lens {
-      grid-template-rows: auto;
     }
 
     .forecast-list {
@@ -892,50 +894,43 @@
   @media (max-width: 700px) {
     .shell {
       width: min(100% - 24px, 1180px);
-      padding-top: 18px;
+      padding-top: 12px;
       gap: 18px;
     }
 
     .topbar {
-      align-items: flex-start;
+      top: 8px;
+      border-radius: 18px;
     }
 
-    .brand-mark {
-      width: 38px;
-      height: 38px;
-      border-radius: 13px;
-    }
+    .time-chip { display: none; }
 
-    .time-chip {
-      display: none;
-    }
+    .brand-subtitle { display: none; }
 
-    .search-panel,
-    .weather-lens,
+    .hero-copy-panel,
+    .preview-panel,
     .hero-card,
     .panel {
-      border-radius: 22px;
+      border-radius: 24px;
     }
 
-    .search-panel {
+    .hero-copy-panel {
       padding: 24px;
     }
 
     .hero-title {
-      font-size: 45px;
+      font-size: 44px;
+    }
+
+    .hero-text {
+      font-size: 16px;
+      margin-bottom: 24px;
     }
 
     .search-box {
-      grid-template-columns: 42px minmax(0, 1fr) 42px;
-      min-height: 62px;
+      grid-template-columns: 40px minmax(0, 1fr) 40px;
+      min-height: 60px;
       gap: 6px;
-    }
-
-    .search-symbol,
-    .ghost-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 14px;
     }
 
     .primary-btn {
@@ -943,16 +938,12 @@
       width: 100%;
     }
 
-    .weather-lens {
+    .preview-panel {
       padding: 18px;
     }
 
-    .lens-map {
-      min-height: 220px;
-    }
-
-    .lens-temp strong {
-      font-size: 72px;
+    .preview-main {
+      min-height: 230px;
     }
 
     .hero-card {
@@ -961,8 +952,8 @@
 
     .panel-head,
     .temperature-row {
-      grid-template-columns: 1fr;
       display: grid;
+      grid-template-columns: 1fr;
     }
 
     .weather-badge {
@@ -985,11 +976,7 @@
   }
 
   @media (max-width: 420px) {
-    .brand-subtitle {
-      display: none;
-    }
-
-    .search-panel {
+    .hero-copy-panel {
       padding: 20px;
     }
 
@@ -1008,7 +995,7 @@
 </style>
 </head>
 <body>
-<div class="backdrop" id="backdrop"></div>
+<div class="ambient" id="backdrop"></div>
 
 <main class="shell">
   <header class="topbar">
@@ -1016,7 +1003,7 @@
       <div class="brand-mark" aria-hidden="true"></div>
       <div>
         <h1 class="brand-title">Krick's Weather</h1>
-        <div class="brand-subtitle">城市天气明信片</div>
+        <div class="brand-subtitle">城市天气</div>
       </div>
     </div>
     <div class="top-actions">
@@ -1026,17 +1013,17 @@
   </header>
 
   <section class="view search-view active" id="searchView">
-    <div class="search-stage">
-      <section class="search-panel" aria-labelledby="searchTitle">
-        <p class="eyebrow">Weather portrait</p>
-        <h2 class="hero-title" id="searchTitle">把一座城的天气，读成一张<span>风景明信片</span>。</h2>
-        <p class="hero-copy">风、云、湿度、降水概率和七日趋势，会和城市最有辨识度的景色一起铺开。</p>
+    <div class="hero-grid">
+      <section class="hero-copy-panel" aria-labelledby="searchTitle">
+        <p class="eyebrow">Krick's Weather</p>
+        <h2 class="hero-title" id="searchTitle">天气，也可以很<span>清爽</span>。</h2>
+        <p class="hero-text">搜索一座城市，把温度、风、降水、七日趋势和代表景色放在同一个干净的页面里。</p>
 
         <div class="search-wrap">
           <form class="search-box" id="searchForm">
             <div class="search-symbol" aria-hidden="true">⌕</div>
             <input class="search-input" id="searchInput" type="search" placeholder="搜索城市、区县或地名" autocomplete="off" aria-label="搜索城市">
-            <button class="ghost-btn" id="clearBtn" type="button" aria-label="清空">×</button>
+            <button class="clear-btn" id="clearBtn" type="button" aria-label="清空">×</button>
             <button class="primary-btn" type="submit">查看天气</button>
           </form>
           <div class="suggestions" id="suggestions" role="listbox" aria-label="地点建议"></div>
@@ -1045,21 +1032,21 @@
         <div class="quick-row" id="quickRow" aria-label="热门城市"></div>
       </section>
 
-      <aside class="weather-lens" aria-label="城市天气快照">
-        <div class="lens-top">
-          <div class="lens-label">Live city mood</div>
-          <div class="pulse-dot" aria-hidden="true"></div>
+      <aside class="preview-panel" aria-label="天气预览">
+        <div class="preview-top">
+          <div class="preview-label">今日概览</div>
+          <div class="signal">实时</div>
         </div>
-        <div class="lens-map">
+        <div class="preview-main">
           <div>
-            <div class="lens-temp"><strong>24</strong><span>°C</span></div>
-            <p class="lens-caption">天气不是一串数字，它也会改变街道、树影、窗边和傍晚的颜色。</p>
+            <div class="preview-temp"><strong>24</strong><sup>°C</sup></div>
+            <p class="preview-copy">更少装饰，更清楚地看到你真正关心的天气变化。</p>
           </div>
         </div>
-        <div class="city-strip">
-          <div class="city-tile"><i>晴</i><div><strong>杭州 · 西湖</strong><span>晨间微风，湖面更清亮</span></div><b>18°</b></div>
-          <div class="city-tile"><i>云</i><div><strong>成都 · 锦里</strong><span>湿度偏高，街巷适合慢走</span></div><b>22°</b></div>
-          <div class="city-tile"><i>雨</i><div><strong>重庆 · 洪崖洞</strong><span>夜色和水汽一起亮起来</span></div><b>20°</b></div>
+        <div class="city-stack">
+          <div class="city-row"><i>☀️</i><div><strong>杭州 · 西湖</strong><span>湖面清亮，适合慢走</span></div><b>18°</b></div>
+          <div class="city-row"><i>☁️</i><div><strong>成都 · 锦里</strong><span>湿度偏高，节奏柔和</span></div><b>22°</b></div>
+          <div class="city-row"><i>🌧️</i><div><strong>重庆 · 洪崖洞</strong><span>水汽让夜景更明亮</span></div><b>20°</b></div>
         </div>
       </aside>
     </div>
@@ -1302,7 +1289,7 @@ function showSearchView() {
   searchView.classList.add('active');
   detailView.classList.remove('active');
   backBtn.classList.remove('visible');
-  document.title = "Krick's Weather · 城市天气明信片";
+  document.title = "Krick's Weather";
   setBackdropImage(null);
 }
 
@@ -1321,7 +1308,7 @@ function setBackdropImage(url) {
   const img = new Image();
   img.onload = () => {
     backdrop.style.setProperty('--place-image', `url("${url}")`);
-    backdrop.style.setProperty('--place-opacity', '0.68');
+    backdrop.style.setProperty('--place-opacity', '0.34');
   };
   img.onerror = () => backdrop.style.setProperty('--place-opacity', '0');
   img.src = url;
@@ -1358,7 +1345,7 @@ function setLoading(place) {
     <div class="state-panel">
       <div>
         <div class="loader"></div>
-        <strong>正在打开展示页</strong>
+        <strong>正在打开</strong>
         <p>${escapeHTML(place.name)} 的天气、趋势和景色正在同步。</p>
       </div>
     </div>`;
@@ -1674,7 +1661,7 @@ function makeTips(data) {
   if (uv >= 7) {
     tips.push(['紫外线偏强', '帽子、防晒和补水不要省，亮色地面会增强反射。']);
   } else if (wind >= 28) {
-    tips.push(['风力偏大', '江边、湖边和高架处体感更明显，轻便物品要收好。']);
+    tips.push(['风力偏大', '江边、湖边和高处体感更明显，轻便物品要收好。']);
   } else {
     tips.push(['节奏平稳', '天气没有明显阻碍，适合把路线拉长一点。']);
   }
