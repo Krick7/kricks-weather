@@ -1767,6 +1767,252 @@ const foodProfiles = {
   ]
 };
 
+Object.assign(cityProfiles, {
+  '北京': {
+    landmarks: ['故宫', '中轴线'],
+    photoQueries: ['北京 故宫博物院', '北京中轴线 天安门', '景山 万春亭 北京', '八达岭长城 北京', '什刹海 北京'],
+    copy: '北京的城市名片集中在故宫、中轴线、景山和胡同。晴天适合登高看屋脊与城墙线条，风大时胡同口和城楼附近体感会更明显。',
+    mood: '故宫屋脊、中轴线和胡同树影最能体现北京天气',
+    travel: {
+      rain: '雨天优先把故宫、国家博物馆、首都博物馆等室内场馆放前面；景山、城墙和胡同石板路雨后容易滑。',
+      heat: '高温时把天安门广场、景山和中轴线步行段放到清晨或傍晚，午后改故宫、国博或商场休整。',
+      cold: '低温和风天，天安门广场、景山顶和长安街风口更冷，胡同路线建议缩短并留热饮停靠点。',
+      wind: '大风天少安排景山、城楼、长城等开阔高处，胡同里也要注意落叶和扬尘。',
+      clear: '晴朗低云量时优先景山万春亭、故宫角楼和中轴线视角，城市轮廓最清楚。',
+      night: '夜间适合什刹海、前门和长安街沿线，注意地铁末班和广场安检时间。'
+    }
+  },
+  '上海': {
+    landmarks: ['外滩', '陆家嘴'],
+    photoQueries: ['上海 外滩 陆家嘴', '上海 外滩 夜景', '上海 豫园', '武康路 上海', '南京路步行街 上海'],
+    copy: '上海最有辨识度的是外滩、陆家嘴天际线、豫园和梧桐街区。天气会直接改变黄浦江面、玻璃幕墙和街灯反光。',
+    mood: '江风、天际线和梧桐街区一起变化',
+    travel: {
+      rain: '雨天外滩台阶和江边地面湿滑，先把上海博物馆、豫园商城、南京路商场或地铁连通路线放进计划。',
+      heat: '高温天少走南京路到外滩的长暴晒线，午后改陆家嘴商场、博物馆或咖啡馆，傍晚再看江景。',
+      cold: '江边风会放大体感冷，外滩和滨江步道建议缩短停留，夜景拍摄带外套。',
+      wind: '大风天黄浦江边、观景平台和桥上风感明显，拍照和骑行都要降级。',
+      clear: '晴朗时优先外滩到陆家嘴的对望视角，日落后蓝调时刻最适合拍天际线。',
+      night: '夜间适合外滩、陆家嘴和苏州河步道，返程优先地铁，避开江边长时间停留。'
+    }
+  },
+  '杭州': {
+    landmarks: ['西湖', '灵隐寺'],
+    photoQueries: ['杭州 西湖 断桥', '杭州 雷峰塔 西湖', '杭州 灵隐寺', '龙井村 杭州', '京杭大运河 杭州'],
+    copy: '杭州的城市气质集中在西湖、灵隐寺、龙井村和运河。云、雨和湖面反光会让同一条路线呈现完全不同的层次。',
+    mood: '西湖水面、山色和茶园最吃天气',
+    travel: {
+      rain: '雨天西湖苏堤、白堤和断桥石面容易湿滑，可改灵隐寺、浙江省博物馆、湖滨商圈或运河沿线短线。',
+      heat: '热天把西湖环湖步行切成短段，清晨走苏堤或龙井村，午后去湖滨、博物馆或茶馆。',
+      cold: '低温时湖边风更明显，雷峰塔、断桥和北山街别久站，带一层防风外套。',
+      wind: '风大时少安排游船和长桥停留，转去灵隐、龙井村或街巷路线更稳。',
+      clear: '晴朗时优先雷峰塔、西湖日落和北山街，远山与湖面层次最清楚。',
+      night: '夜间适合湖滨、南山路和运河灯光线，西湖边注意末班交通和步行距离。'
+    }
+  },
+  '成都': {
+    landmarks: ['宽窄巷子', '锦里'],
+    photoQueries: ['成都 宽窄巷子', '成都 锦里', '成都 太古里 春熙路', '成都 武侯祠', '都江堰 成都'],
+    copy: '成都的城市体验在宽窄巷子、锦里、武侯祠、春熙路和茶馆里展开。阴天和小雨反而更贴近这座城市的慢节奏。',
+    mood: '街巷、茶馆和湿润空气很有成都感',
+    travel: {
+      rain: '小雨天适合宽窄巷子、锦里和茶馆短线串联；都江堰、青城山石阶雨后防滑，山线不要排太满。',
+      heat: '闷热天把户外街区放早晚，午后去太古里、博物馆或茶馆，火锅安排到晚上更舒服。',
+      cold: '降温时锦里、宽窄巷子夜间更冷，火锅或茶馆可以作为中途暖站。',
+      wind: '风大时少安排开阔广场久站，街巷和室内展馆更适合。',
+      clear: '晴天适合人民公园、武侯祠和街巷慢走，远郊山线看能见度再决定。',
+      night: '夜间可走锦里、九眼桥或太古里，但返程别只看距离，成都夜间打车点会集中。'
+    }
+  },
+  '重庆': {
+    landmarks: ['洪崖洞', '长江索道'],
+    photoQueries: ['重庆 洪崖洞 夜景', '重庆 长江索道', '重庆 解放碑', '重庆 千厮门大桥', '重庆 李子坝'],
+    copy: '重庆的特色来自两江、桥、索道、坡坎和立体街区。雾、雨和夜色会把山城层次放大。',
+    mood: '山城高差、江面和夜景反光最有辨识度',
+    travel: {
+      rain: '雨天坡坎、台阶和江边步道容易滑，洪崖洞、解放碑、来福士等近距离连线更稳。',
+      heat: '高温天少爬长坡和连续台阶，午后用轨道交通、商场和江边短暂停靠分段。',
+      cold: '湿冷天江边和桥上体感更低，长江索道排队和夜景等待都要多穿一层。',
+      wind: '风大时桥上、江边和观景平台风感明显，手机和轻便物品要收稳。',
+      clear: '晴朗时优先南山、鹅岭二厂、千厮门桥视角，山城层次会更清楚。',
+      night: '夜间适合洪崖洞、千厮门大桥和解放碑，返程尽量避开单一路线拥堵。'
+    }
+  },
+  '厦门': {
+    landmarks: ['鼓浪屿', '环岛路'],
+    photoQueries: ['厦门 鼓浪屿', '厦门 环岛路', '厦门 沙坡尾', '厦门 南普陀寺', '厦门 曾厝垵'],
+    copy: '厦门的城市名片是鼓浪屿、环岛路、沙坡尾和南普陀。海风、阵雨和日照会直接改变游玩体验。',
+    mood: '海风、岛屿街巷和滨海日照最突出',
+    travel: {
+      rain: '阵雨天先确认鼓浪屿轮渡和海边风浪，沙坡尾、中华城、南普陀短线更可控。',
+      heat: '晴热天环岛路和海边暴晒强，清晨或傍晚走海边，午后转咖啡馆、展馆或街区室内。',
+      cold: '海风天体感会比温度低，鼓浪屿和环岛路别穿太单薄。',
+      wind: '大风天少安排骑行和长时间海边停留，轮渡、栈道和沙滩活动要先降级。',
+      clear: '晴朗时优先鼓浪屿高处、环岛路和演武大桥观景平台，海面颜色最好。',
+      night: '夜间适合沙坡尾、白城和中山路，海边风大时缩短停留。'
+    }
+  },
+  '西安': {
+    landmarks: ['城墙', '兵马俑'],
+    photoQueries: ['西安 城墙', '西安 兵马俑', '西安 大雁塔', '西安 钟楼', '西安 大唐不夜城'],
+    copy: '西安的辨识度在城墙、兵马俑、大雁塔、钟楼和唐风街区。晴天线条硬朗，夜间灯光会强化古城氛围。',
+    mood: '城墙线条、砖石色和唐风夜景很有分量',
+    travel: {
+      rain: '雨天城墙骑行和砖石台阶要谨慎，可把陕西历史博物馆、兵马俑室内展区和商圈提前。',
+      heat: '高温天城墙、大雁塔广场暴晒强，上午去兵马俑或博物馆，傍晚再走城墙和夜景。',
+      cold: '冬季城墙和广场风感明显，夜游大唐不夜城要带防风外套。',
+      wind: '风大时城墙上、钟楼周边和开阔广场更冷更干，骑行路线建议缩短。',
+      clear: '晴朗时优先城墙、钟楼和大雁塔轴线，日落后灯光更适合拍照。',
+      night: '夜间适合大唐不夜城、钟鼓楼和回民街，但人流集中，返程留时间。'
+    }
+  },
+  '广州': {
+    landmarks: ['广州塔', '珠江'],
+    photoQueries: ['广州 广州塔 珠江', '广州 沙面', '广州 陈家祠', '广州 永庆坊', '广州 北京路'],
+    copy: '广州的特色在珠江、广州塔、骑楼街、沙面和早茶生活。湿热、阵雨和江风是它最常见的天气变量。',
+    mood: '珠江夜景、骑楼和湿热空气最有广州感',
+    travel: {
+      rain: '阵雨天优先骑楼街、永庆坊、北京路和商场连线；珠江边地面湿滑，夜游船要看天气。',
+      heat: '湿热天把户外放早晚，午后安排早茶、陈家祠、广东省博物馆或商场。',
+      cold: '降温时珠江边和桥上风感明显，夜游广州塔周边要带外套。',
+      wind: '风大时广州塔、珠江边和桥上少久站，骑楼街区更稳。',
+      clear: '晴朗时优先广州塔、海心桥和珠江两岸，日落到夜景衔接最好。',
+      night: '夜间适合珠江新城、广州塔和北京路，阵雨季带伞别离身。'
+    }
+  },
+  '苏州': {
+    landmarks: ['拙政园', '平江路'],
+    photoQueries: ['苏州 拙政园', '苏州 平江路', '苏州 虎丘', '苏州 山塘街', '苏州 金鸡湖'],
+    copy: '苏州的天气最容易落在园林、水巷、白墙和石板路上。晴天看层次，雨天看江南氛围。',
+    mood: '园林水面、白墙和石板街巷都很吃天气',
+    travel: {
+      rain: '雨天园林石板和桥面防滑，拙政园、苏州博物馆、平江路短线更合适，别把水巷步行拉太长。',
+      heat: '热天园林上午去，午后改苏博、诚品或金鸡湖商圈，水巷避开正午。',
+      cold: '湿冷天山塘街和平江路体感偏冷，茶馆和室内展馆适合做中途停靠。',
+      wind: '风大时金鸡湖和桥上体感更明显，园林和街巷更稳定。',
+      clear: '晴朗时优先拙政园、虎丘和金鸡湖日落，白墙与水面层次最清楚。',
+      night: '夜间适合山塘街和平江路，水边路窄，雨后慢行。'
+    }
+  },
+  '昆明': {
+    landmarks: ['滇池', '西山'],
+    photoQueries: ['昆明 滇池 西山', '昆明 翠湖', '昆明 石林', '昆明 斗南花市', '昆明 云南民族村'],
+    copy: '昆明的特色是高原日照、滇池、西山、翠湖和花市。紫外线、风和早晚温差比单看气温更重要。',
+    mood: '高原日照、远山和湖面风感最明显',
+    travel: {
+      rain: '雨天少排西山长步道和滇池长线，翠湖、斗南花市、博物馆或市区短线更稳。',
+      heat: '日照强时滇池和石林暴晒明显，帽子、防晒和补水优先级很高。',
+      cold: '早晚温差大，白天轻装不代表晚上不用外套，滇池边风会放大体感。',
+      wind: '风大时滇池、海埂大坝和西山观景点更明显，骑行和湖边久站要降级。',
+      clear: '晴朗时优先西山、滇池和翠湖，远山与湖面最通透。',
+      night: '夜间温度下降快，市区短线和花市周边比湖边更舒服。'
+    }
+  },
+  '南京': {
+    landmarks: ['中山陵', '夫子庙'],
+    photoQueries: ['南京 中山陵', '南京 夫子庙 秦淮河', '南京 明城墙', '南京 玄武湖', '南京 总统府'],
+    copy: '南京的城市气质在中山陵、秦淮河、明城墙、玄武湖和梧桐大道。雨天厚重，晴天树影很浓。',
+    mood: '城墙、梧桐和秦淮河最能承接天气变化',
+    travel: {
+      rain: '雨天明城墙、台阶和玄武湖边慢行，夫子庙、总统府和博物馆更适合串联。',
+      heat: '高温天中山陵台阶和城墙暴晒强，清晨去陵园，午后转博物馆或秦淮室内。',
+      cold: '湿冷天秦淮河边和玄武湖边体感偏低，夜游要留外套。',
+      wind: '风大时城墙和湖边更明显，街巷与室内展馆更稳。',
+      clear: '晴朗时优先中山陵、明城墙和玄武湖，树影和城墙线条更漂亮。',
+      night: '夜间适合秦淮河和夫子庙，节假日人流集中，返程提前。'
+    }
+  },
+  '武汉': {
+    landmarks: ['黄鹤楼', '东湖'],
+    photoQueries: ['武汉 黄鹤楼', '武汉 东湖', '武汉 长江大桥', '武汉 江汉路', '武汉 湖北省博物馆'],
+    copy: '武汉的城市感来自长江、东湖、黄鹤楼和江汉路。江风、湿热和湖面天气是出行关键。',
+    mood: '江风、湖面和城市烟火气很强',
+    travel: {
+      rain: '雨天东湖绿道和江滩步道容易湿滑，可改湖北省博物馆、江汉路和商圈短线。',
+      heat: '高温天少走江滩和东湖长线，清晨或傍晚去湖边，午后进博物馆或商场。',
+      cold: '江边风会放大低温，黄鹤楼和长江大桥附近夜间别久站。',
+      wind: '风大时长江大桥、江滩和东湖开阔处更明显，骑行路线缩短。',
+      clear: '晴朗时优先黄鹤楼、长江大桥和东湖，视野开阔时城市层次更好。',
+      night: '夜间适合江汉路和江滩短线，注意跨江返程时间。'
+    }
+  }
+});
+
+Object.assign(foodProfiles, {
+  '北京': [
+    { name: '北京烤鸭', icon: '🥢', note: '北京代表名菜，适合正餐慢慢吃；冷天或风大时更有仪式感。', color: '#c9822c', tags: ['cold', 'dinner', 'classic'] },
+    { name: '炸酱面', icon: '🍜', note: '老北京家常面食，行程紧或午餐补能量很稳。', color: '#b8793f', tags: ['walk', 'lunch'] },
+    { name: '豆汁儿焦圈', icon: '🥣', note: '北京传统风味，口味很有门槛，适合想体验本地日常的人。', color: '#88b98a', tags: ['local'] },
+    { name: '铜锅涮肉', icon: '🍲', note: '秋冬和降温天很适合，靠近胡同或老城路线时更顺路。', color: '#d4a95f', tags: ['cold', 'rain'] }
+  ],
+  '上海': [
+    { name: '小笼包', icon: '🥢', note: '上海经典点心，适合豫园、南京路或人民广场附近短暂停靠。', color: '#d99b56', tags: ['classic', 'rain'] },
+    { name: '生煎', icon: '🥟', note: '街头热食代表，雨天或降温时一份很提气。', color: '#d1a449', tags: ['rain', 'cold'] },
+    { name: '葱油拌面', icon: '🍜', note: '本帮日常味道，轻便、稳定，适合赶路午餐。', color: '#75a96d', tags: ['walk', 'lunch'] },
+    { name: '排骨年糕', icon: '🍽️', note: '上海老派小吃，适合南京路、人民广场一带补能量。', color: '#be7f55', tags: ['classic'] }
+  ],
+  '杭州': [
+    { name: '片儿川', icon: '🍜', note: '杭州面食代表，湖边起风或雨天吃一碗很舒服。', color: '#8ab46f', tags: ['rain', 'cold'] },
+    { name: '龙井虾仁', icon: '🍵', note: '杭州名菜，清爽细致，适合晴天或茶园路线之后。', color: '#78b8a0', tags: ['clear', 'classic'] },
+    { name: '西湖醋鱼', icon: '🐟', note: '西湖相关名菜，适合正式餐厅体验，不建议赶时间时匆忙吃。', color: '#b97958', tags: ['classic', 'dinner'] },
+    { name: '定胜糕', icon: '🍡', note: '江南甜点，走完西湖或南宋御街后适合少量尝鲜。', color: '#d98aa5', tags: ['walk'] }
+  ],
+  '成都': [
+    { name: '成都火锅', icon: '🍲', note: '成都代表性味道，雨天、夜间或降温时最合适。', color: '#d85f45', tags: ['rain', 'cold', 'night'] },
+    { name: '担担面', icon: '🍜', note: '四川传统小吃，街巷短停很方便，阴天小雨也很提神。', color: '#c96f45', tags: ['walk', 'rain'] },
+    { name: '钟水饺', icon: '🥟', note: '成都小吃代表，适合宽窄巷子、春熙路一带少量尝鲜。', color: '#b95c55', tags: ['classic'] },
+    { name: '甜水面', icon: '🥢', note: '甜辣厚实，湿热天也能打开胃口。', color: '#aa6bb8', tags: ['humid'] }
+  ],
+  '重庆': [
+    { name: '重庆小面', icon: '🍜', note: '重庆日常代表，早上或赶路时最稳，雨雾天也醒神。', color: '#d65745', tags: ['rain', 'walk'] },
+    { name: '重庆火锅', icon: '🍲', note: '山城标志性味道，夜景后或降温时最合拍。', color: '#c94c4c', tags: ['night', 'cold', 'rain'] },
+    { name: '酸辣粉', icon: '🥣', note: '酸辣轻快，适合解放碑、磁器口等街区短暂停留。', color: '#d7813f', tags: ['walk'] },
+    { name: '抄手', icon: '🥟', note: '热汤或红油都常见，雨天走坡坎后很适合。', color: '#c96f58', tags: ['rain'] }
+  ],
+  '厦门': [
+    { name: '沙茶面', icon: '🍜', note: '厦门代表小吃，海风天或阵雨后吃一碗很贴近本地。', color: '#d7904f', tags: ['rain', 'wind'] },
+    { name: '海蛎煎', icon: '🍳', note: '闽南常见小吃，适合中山路、八市等街区尝鲜。', color: '#a8b9c8', tags: ['classic'] },
+    { name: '花生汤', icon: '🥣', note: '甜热柔和，晴天逛累或夜间散步后都合适。', color: '#e3b75e', tags: ['walk', 'night'] },
+    { name: '土笋冻', icon: '🧊', note: '闽南特色冷食，热天可尝鲜，口感独特。', color: '#8bbbd0', tags: ['heat', 'local'] }
+  ],
+  '西安': [
+    { name: '肉夹馍', icon: '🥙', note: '西安标志性小吃，赶路、排队或城墙周边都方便。', color: '#c98442', tags: ['walk'] },
+    { name: '羊肉泡馍', icon: '🍲', note: '西安传统名吃，降温或冬天最适合慢慢吃。', color: '#d0a15a', tags: ['cold', 'classic'] },
+    { name: '油泼面', icon: '🍜', note: '陕西面食代表，走完城墙或博物馆后补能量很足。', color: '#c95c45', tags: ['walk'] },
+    { name: '凉皮', icon: '🥗', note: '热天更清爽，适合午后轻食。', color: '#87aa70', tags: ['heat'] }
+  ],
+  '广州': [
+    { name: '广式早茶', icon: '🥢', note: '广州生活方式代表，湿热天把早晨过慢一点很舒服。', color: '#d6ad55', tags: ['morning', 'classic'] },
+    { name: '肠粉', icon: '🍽️', note: '广州常见早餐和小吃，阵雨前后轻便不负担。', color: '#adc2d0', tags: ['rain', 'morning'] },
+    { name: '云吞面', icon: '🍜', note: '竹升面和汤底很有岭南味，江风或降温时更合适。', color: '#76a970', tags: ['cold', 'wind'] },
+    { name: '双皮奶', icon: '🍮', note: '顺德广府甜品代表，热天或逛街中途适合休息。', color: '#e0c77a', tags: ['heat'] }
+  ],
+  '苏州': [
+    { name: '苏式汤面', icon: '🍜', note: '苏州日常代表，细雨天和清晨最有江南味。', color: '#8bbbd0', tags: ['rain', 'morning'] },
+    { name: '松鼠鳜鱼', icon: '🐟', note: '苏帮菜代表，适合正式餐厅体验。', color: '#d58b58', tags: ['classic', 'dinner'] },
+    { name: '桂花糖藕', icon: '🍮', note: '江南甜口，园林或平江路走累后适合小份尝。', color: '#d68ba4', tags: ['walk'] },
+    { name: '蟹粉小笼', icon: '🥟', note: '秋冬更应景，适合慢慢吃。', color: '#d1a05d', tags: ['cold'] }
+  ],
+  '昆明': [
+    { name: '过桥米线', icon: '🍜', note: '云南代表小吃，早晚凉或风大时一碗热汤很舒服。', color: '#d88d4f', tags: ['cold', 'wind'] },
+    { name: '鲜花饼', icon: '🌸', note: '昆明伴手礼和甜点代表，晴天逛翠湖或花市后很合适。', color: '#d88ba8', tags: ['clear', 'walk'] },
+    { name: '汽锅鸡', icon: '🍲', note: '云南传统菜，降温或晚餐时适合。', color: '#8ab4c8', tags: ['cold', 'dinner'] },
+    { name: '烧饵块', icon: '🥢', note: '云南街头小吃，早晨或赶路时方便。', color: '#c99f6b', tags: ['morning', 'walk'] }
+  ],
+  '南京': [
+    { name: '鸭血粉丝汤', icon: '🥣', note: '南京代表小吃，阴雨和湿冷天很适合。', color: '#c98145', tags: ['rain', 'cold'] },
+    { name: '盐水鸭', icon: '🥢', note: '南京名菜，晴天走街串巷后适合作为正餐。', color: '#caa568', tags: ['classic'] },
+    { name: '牛肉锅贴', icon: '🥟', note: '街头热食，秦淮或夫子庙路线中途补能量很稳。', color: '#b87345', tags: ['walk'] },
+    { name: '梅花糕', icon: '🍮', note: '甜香小吃，适合傍晚慢逛。', color: '#d78ca4', tags: ['night'] }
+  ],
+  '武汉': [
+    { name: '热干面', icon: '🍜', note: '武汉早餐名片，早上或赶路前最地道。', color: '#d59b43', tags: ['morning', 'classic'] },
+    { name: '三鲜豆皮', icon: '🥢', note: '武汉传统早点，行程开始前吃一份很有底气。', color: '#d7b14d', tags: ['morning'] },
+    { name: '藕汤', icon: '🍲', note: '湖北家常味，风大或降温时很合适。', color: '#8ab46f', tags: ['cold', 'wind'] },
+    { name: '鸭脖', icon: '🥡', note: '武汉常见风味，夜间江汉路或街区短停可尝。', color: '#bf5f45', tags: ['night'] }
+  ]
+});
+
 const placeCache = new Map();
 const imageCache = new Map();
 const lastImageCache = new Map();
@@ -2428,6 +2674,9 @@ async function fetchWikiImages(query) {
     generator: 'search',
     gsrsearch: query,
     gsrlimit: '12',
+    gsrnamespace: '0',
+    gsrqiprofile: 'popular_inclinks_pv',
+    gsrsort: 'relevance',
     prop: 'pageimages',
     piprop: 'thumbnail',
     pithumbsize: '2200',
@@ -2450,6 +2699,8 @@ async function fetchCommonsImages(query) {
     gsrsearch: query,
     gsrlimit: '14',
     gsrnamespace: '6',
+    gsrqiprofile: 'popular_inclinks_pv',
+    gsrsort: 'relevance',
     prop: 'imageinfo',
     iiprop: 'url',
     iiurlwidth: '2200',
@@ -2469,13 +2720,20 @@ function imageQueriesFor(place) {
   const profile = profileFor(place);
   const cleanName = cleanCityName(place.name);
   const adminName = cleanCityName(place.admin1 || '');
+  const priorityQueries = (profile.photoQueries || []).flatMap((query) => [
+    query,
+    `${query} 风景`,
+    `${query} cityscape`
+  ]);
   const landmarkQueries = profile.landmarks.flatMap((landmark) => [
     `${cleanName} ${landmark}`,
     `${cleanName} ${landmark} 风景`,
+    `${cleanName} ${landmark} 夜景`,
     `${landmark} ${adminName}`,
     landmark
   ]);
   return uniqueItems([
+    ...priorityQueries,
     ...landmarkQueries,
     `${cleanName} 城市风光`,
     `${cleanName} 地标`,
@@ -2496,7 +2754,8 @@ function imageQueriesFor(place) {
 function pickSceneryImage(key, pool) {
   if (!pool.length) return null;
   const lastImage = lastImageCache.get(key);
-  const choices = pool.length > 1 ? pool.filter((url) => url !== lastImage) : pool;
+  const highRelevancePool = pool.slice(0, Math.min(pool.length, 8));
+  const choices = highRelevancePool.length > 1 ? highRelevancePool.filter((url) => url !== lastImage) : highRelevancePool;
   const selected = pickRandom(choices.length ? choices : pool);
   lastImageCache.set(key, selected);
   return selected;
@@ -2508,7 +2767,7 @@ async function findSceneryImage(place) {
 
   if (pool) return pickSceneryImage(key, pool);
 
-  const queries = shuffled(imageQueriesFor(place));
+  const queries = imageQueriesFor(place);
   const collected = [];
 
   for (const query of queries) {
@@ -2553,10 +2812,12 @@ async function selectPlace(place) {
   }
 }
 
-function makeTips(data) {
+function makeTips(data, place) {
   const current = data.current || {};
   const daily = data.daily || {};
   const hourly = data.hourly || {};
+  const profile = place ? profileFor(place) : null;
+  const travel = profile?.travel || {};
   const asNumber = (value, fallback = 0) => {
     const next = Number(value);
     return Number.isFinite(next) ? next : fallback;
@@ -2599,41 +2860,66 @@ function makeTips(data) {
   const hasNext = (codes) => nextCodes.some((nextCode) => includesCode(codes, nextCode));
   const rainyNow = precipitation > 0 || includesCode(rainCodes, code);
   const drizzleNow = includesCode(drizzleCodes, code);
+  const localLandmark = profile?.landmarks?.[0] || place?.name || '当地路线';
 
   const tips = [];
   const used = new Set();
+  let localTipIndex = -1;
   const addTip = (score, icon, title, body, key = title) => {
     if (used.has(key)) return;
     used.add(key);
     tips.push({ score, icon, title, body });
   };
+  const addLocalTip = (score, icon, key, fallbackTitle = '本地路线建议') => {
+    const body = travel[key] || travel.default || `${localLandmark}一带最能体现当地特色，按当前天气缩短户外暴露时间，并给室内停靠点留余量。`;
+    const next = { score, icon, title: `${localLandmark} · ${fallbackTitle}`, body };
+    if (localTipIndex >= 0) {
+      if (score >= tips[localTipIndex].score) tips[localTipIndex] = next;
+      return;
+    }
+    localTipIndex = tips.length;
+    used.add('local');
+    tips.push(next);
+  };
 
   if (includesCode(thunderCodes, code) || hasNext(thunderCodes)) {
     addTip(100, '⛈️', `雷暴提醒 · ${info.label}`, '先取消开阔地、高处和水边行程，优先选商场、博物馆、地铁沿线等室内路线。', 'storm');
+    addLocalTip(94, '📍', 'rain', '本地避雨路线');
   } else if (includesCode(freezingCodes, code)) {
     addTip(98, '🧊', `冻雨提醒 · 体感${apparent}°C`, '路面、台阶和桥面可能很滑，步行放慢，骑行和电动车路线建议直接降级。', 'iceRain');
+    addLocalTip(93, '📍', 'cold', '本地慢行建议');
   } else if (includesCode(snowCodes, code) || hasNext(snowCodes)) {
     addTip(96, '❄️', `雪天提醒 · ${info.label}`, '鞋底防滑比路线更重要，桥面、台阶和阴影处留余量，景点之间别排太满。', 'snow');
+    addLocalTip(92, '📍', 'cold', '本地雪天路线');
   } else if (includesCode(fogCodes, code)) {
     addTip(92, '🌫️', `低能见度 · 云量${cloud}%`, '过街、上桥和骑行都要多留反应距离；观景台可以后移，街巷近景更适合。', 'fog');
+    addLocalTip(88, '📍', 'clear', '近景路线建议');
   } else if (rainyNow) {
     addTip(90, '🌧️', `正在降水 · ${nextRain}%概率`, '伞和防水鞋放第一优先级，路线尽量串联地铁口、骑楼、商场和可避雨街区。', 'rain');
+    addLocalTip(88, '📍', 'rain', '本地避雨路线');
   } else if (nextRain >= 65 || hasNext(rainCodes)) {
     addTip(86, '🌦️', `雨在路上 · 未来6小时${nextRain}%`, '先走户外段，把室内餐厅、展馆或商场放到后半程，避免被阵雨截在半路。', 'rain');
+    addLocalTip(84, '📍', 'rain', '先户外后室内');
   } else if (drizzleNow || nextRain >= 35 || Math.max(todayRain, tomorrowRain) >= 45) {
     addTip(78, '☔', `可能飘雨 · 最高${Math.max(todayRain, nextRain)}%`, '带一把轻便伞，安排可进可退的路线；雨后天空和地面反光会更好看。', 'drizzle');
+    addLocalTip(76, '📍', 'rain', '轻雨路线建议');
   } else if (code === 0 && cloud < 35) {
     addTip(56, '☀️', `晴朗适合远眺 · 云量${cloud}%`, '观景台、江边、湖边和城市轴线可以放进日程，拍远景会更干净。', 'clear');
+    addLocalTip(74, '📍', 'clear', '经典视角');
   } else if (includesCode(cloudyCodes, code) || cloud >= 70) {
     addTip(52, '☁️', `云层较厚 · 云量${cloud}%`, '光线柔和，适合街巷、园林、建筑细节和长时间步行，正午也不容易刺眼。', 'cloud');
+    addLocalTip(70, '📍', 'clear', '街巷近景');
   } else {
     addTip(48, info.icon, `${info.label}出行`, '天气变化不算激烈，路线可以按兴趣展开，给临时停留和拍照留一点空档。', 'mildWeather');
+    addLocalTip(68, '📍', 'clear', '本地经典路线');
   }
 
   if (apparent >= 38) {
     addTip(88, '🥵', `体感过热 · ${apparent}°C`, '正午户外压缩到短距离，补水、防晒和空调休息点要提前安排好。', 'temperature');
+    addLocalTip(87, '📍', 'heat', '高温路线调整');
   } else if (temp >= 32 || apparent >= 35) {
     addTip(82, '🧊', `高温提醒 · ${temp}°C`, '户外放在早晚，午后改成室内或树荫路线，随身带水比多走一个点更重要。', 'temperature');
+    addLocalTip(81, '📍', 'heat', '高温路线调整');
   } else if (temp >= 28 && humidity >= 75) {
     addTip(76, '💧', `湿热明显 · 湿度${humidity}%`, '减少暴晒长线，选有空调、树荫或水边风口的中途停靠点。', 'temperature');
   } else if (apparent <= 0 || temp <= 3) {
@@ -2648,8 +2934,10 @@ function makeTips(data) {
 
   if (nextWind >= 38) {
     addTip(86, '🌬️', `强风提醒 · ${Math.round(nextWind)} km/h`, '海边、江边、高处和长桥路线先降级，帽子、伞和轻便物品收进包里。', 'wind');
+    addLocalTip(85, '📍', 'wind', '强风路线调整');
   } else if (nextWind >= 24) {
     addTip(66, '🍃', `风感明显 · ${Math.round(nextWind)} km/h`, '骑行、长桥和开阔广场会更费力，拍照时注意衣物和头发被风影响。', 'wind');
+    addLocalTip(77, '📍', 'wind', '风天路线建议');
   }
 
   if (!rainyNow && nextRain >= 50) {
@@ -2662,6 +2950,7 @@ function makeTips(data) {
     addTip(55, '🕶️', `日照明显 · 指数${uv}`, '长时间户外记得补防晒，观景和拍照更适合避开正午顶光。', 'uv');
   } else if (!isDay) {
     addTip(60, '🌙', `夜间出行 · 体感${apparent}°C`, '温度会继续下探，夜景路线注意末班交通，返程别只看距离。', 'night');
+    addLocalTip(80, '📍', 'night', '夜间路线建议');
   } else if (humidity >= 85 && temp >= 22) {
     addTip(54, '🫧', `空气潮湿 · 湿度${humidity}%`, '衣物选轻薄速干，长时间步行会更闷，包里留纸巾或小毛巾。', 'humidity');
   }
@@ -2735,7 +3024,7 @@ function renderWeather(data, place, imageUrl) {
 
   renderForecast(daily);
   renderHourly(data.hourly);
-  renderTips(makeTips(data));
+  renderTips(makeTips(data, place));
   renderFoods(place, data);
 }
 
@@ -2797,17 +3086,35 @@ function renderFoods(place, data) {
   const current = data.current || {};
   const isRainy = Number(current.precipitation || 0) > 0 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(Number(current.weather_code));
   const temp = Math.round(current.temperature_2m || 0);
+  const apparent = Math.round(current.apparent_temperature || temp);
+  const wind = Math.round(current.wind_speed_10m || 0);
+  const humidity = Math.round(current.relative_humidity_2m || 0);
+  const isNight = current.is_day === 0;
+  const context = isRainy
+    ? { tag: 'rain', label: '雨天本地味' }
+    : apparent >= 32
+      ? { tag: 'heat', label: '热天本地味' }
+      : temp <= 10
+        ? { tag: 'cold', label: '冷天本地味' }
+        : wind >= 24
+          ? { tag: 'wind', label: '风天本地味' }
+          : isNight
+            ? { tag: 'night', label: '夜间本地味' }
+            : humidity >= 80
+              ? { tag: 'humid', label: '湿润本地味' }
+              : { tag: 'classic', label: '城市代表味' };
   const foods = foodsFor(place);
-  const ordered = shuffled(foods).slice(0, 3);
+  const ordered = foods
+    .map((food, index) => ({
+      ...food,
+      score: (food.tags || []).includes(context.tag) ? 4 : (food.tags || []).includes('classic') ? 2 : 1,
+      index
+    }))
+    .sort((a, b) => b.score - a.score || a.index - b.index)
+    .slice(0, 3);
 
   foodList.innerHTML = ordered.map((food, index) => {
-    const weatherNote = index === 0 && isRainy
-      ? '雨天推荐'
-      : index === 0 && temp >= 28
-        ? '热天推荐'
-        : index === 0 && temp <= 10
-          ? '冷天推荐'
-          : '本地味道';
+    const weatherNote = index === 0 ? context.label : '当地特色';
     return `
       <div class="food-card" style="--food-color:${escapeHTML(food.color)}; --food-tint:${escapeHTML(food.color)}22;">
         <div class="food-illustration" aria-hidden="true">${escapeHTML(food.icon)}</div>
