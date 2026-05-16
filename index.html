@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Krick's Weather 是一张清爽的城市天气卡片，手机打开即可搜索城市、查看实时天气、七日趋势、出行提醒和代表景色。">
+<meta name="description" content="Krick's Weather 是一张清爽的城市天气卡片，手机打开即可搜索城市、查看实时天气、七日趋势和出行提醒。">
 <meta name="theme-color" content="#eaf5fb">
 <meta name="format-detection" content="telephone=no">
 <meta property="og:title" content="Krick's Weather">
-<meta property="og:description" content="搜索一座城，看见天气、趋势、出行提醒和代表景色。">
+<meta property="og:description" content="搜索一座城，看见天气、趋势和出行提醒。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://krick7.github.io/kricks-weather/">
 <title>Krick's Weather</title>
@@ -1503,11 +1503,10 @@
       <section class="hero-card" id="heroCard" aria-labelledby="placeTitle">
         <div class="hero-content">
           <div class="hero-kicker">
-            <span class="pill" id="placeLandmark">代表景色</span>
             <span class="pill" id="placeWeather">等待天气</span>
           </div>
           <h2 class="place-title" id="placeTitle">城市</h2>
-          <p class="place-copy" id="placeCopy">搜索后，这里会显示这座城市的天气、景色和今天最值得留意的变化。</p>
+          <p class="place-copy" id="placeCopy">搜索后，这里会显示这座城市的天气、趋势和今天最值得留意的变化。</p>
         </div>
       </section>
 
@@ -1534,35 +1533,9 @@
         </div>
 
         <aside class="side-column">
-          <section class="panel story-panel" id="storyPanel">
-            <div>
-              <h3 class="panel-title">城市片段</h3>
-              <p class="story-copy" id="storyCopy">每座城市都有自己的天气质感。</p>
-            </div>
-            <div class="story-list">
-              <div class="story-item">
-                <span class="story-label">代表地点</span>
-                <strong id="storyLandmark">未选择</strong>
-              </div>
-              <div class="story-item">
-                <span class="story-label">今日感受</span>
-                <strong id="storyMood">等待天气</strong>
-              </div>
-              <div class="story-item">
-                <span class="story-label">地理坐标</span>
-                <strong id="storyGeo">--</strong>
-              </div>
-            </div>
-          </section>
-
           <section class="panel" id="tipsPanel">
             <h3 class="panel-title">出行提醒</h3>
             <div class="tips-list" id="tipsList"></div>
-          </section>
-
-          <section class="panel" id="foodPanel">
-            <h3 class="panel-title">当地美食</h3>
-            <div class="food-grid" id="foodList"></div>
           </section>
         </aside>
       </div>
@@ -1590,18 +1563,12 @@ const heroText = $('heroText');
 const searchNote = $('searchNote');
 const heroCard = $('heroCard');
 const placeTitle = $('placeTitle');
-const placeLandmark = $('placeLandmark');
 const placeWeather = $('placeWeather');
 const placeCopy = $('placeCopy');
 const weatherPanel = $('weatherPanel');
 const forecastList = $('forecastList');
 const hourRow = $('hourRow');
-const storyCopy = $('storyCopy');
-const storyLandmark = $('storyLandmark');
-const storyMood = $('storyMood');
-const storyGeo = $('storyGeo');
 const tipsList = $('tipsList');
-const foodList = $('foodList');
 
 const quickCities = ['北京', '上海', '杭州', '成都', '重庆', '厦门', '西安', '广州', '苏州', '昆明'];
 
@@ -1626,7 +1593,7 @@ const entryCopies = [
     eyebrow: '问问远方',
     title: '城市有天气，',
     accent: '天气也有性格。',
-    text: '先输入城市名，再进入结果页。那里会有实时天气、七日趋势、出行提醒和城市片段。',
+    text: '先输入城市名，再进入结果页。那里会有实时天气、七日趋势和出行提醒。',
     note: '适合出门前看一眼，也适合想念一座城时看一眼。'
   },
   {
@@ -2030,7 +1997,6 @@ Object.assign(foodProfiles, {
 
 const placeCache = new Map();
 const imageCache = new Map();
-const foodImageCache = new Map();
 const lastImageCache = new Map();
 let currentSuggestions = [];
 let activeIndex = -1;
@@ -2468,7 +2434,7 @@ function showSearchView() {
   detailView.classList.remove('active');
   backBtn.classList.remove('visible');
   document.title = "Krick's Weather";
-  setBackdropImage(null);
+  backdrop.style.setProperty('--place-opacity', '0');
 }
 
 function showDetailView() {
@@ -2478,54 +2444,20 @@ function showDetailView() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function setBackdropImage(url) {
-  if (!url) {
-    backdrop.style.setProperty('--place-opacity', '0');
-    return;
-  }
-  const img = new Image();
-  img.onload = () => {
-    backdrop.style.setProperty('--place-image', `url("${url}")`);
-    backdrop.style.setProperty('--place-opacity', '0.34');
-  };
-  img.onerror = () => backdrop.style.setProperty('--place-opacity', '0');
-  img.src = url;
-}
-
-function setHeroImage(url) {
-  if (!url) {
-    heroCard.style.setProperty('--hero-opacity', '0');
-    return;
-  }
-  const img = new Image();
-  img.onload = () => {
-    heroCard.style.setProperty('--hero-image', `url("${url}")`);
-    heroCard.style.setProperty('--hero-opacity', '1');
-  };
-  img.onerror = () => heroCard.style.setProperty('--hero-opacity', '0');
-  img.src = url;
-}
-
 function setLoading(place) {
   const profile = profileFor(place);
   placeTitle.textContent = place.name;
-  placeLandmark.textContent = profile.landmarks[0];
   placeWeather.textContent = '读取天气';
   placeCopy.textContent = profile.copy;
-  storyLandmark.textContent = profile.landmarks.join(' · ');
-  storyMood.textContent = '正在整理';
-  storyGeo.textContent = `${Number(place.latitude).toFixed(2)}, ${Number(place.longitude).toFixed(2)}`;
-  storyCopy.textContent = profile.copy;
   forecastList.innerHTML = '';
   hourRow.innerHTML = '';
   tipsList.innerHTML = '';
-  foodList.innerHTML = '';
   weatherPanel.innerHTML = `
     <div class="state-panel">
       <div>
         <div class="loader"></div>
         <strong>正在打开</strong>
-        <p>${escapeHTML(place.name)} 的天气、趋势和景色正在同步。</p>
+        <p>${escapeHTML(place.name)} 的天气和趋势正在同步。</p>
       </div>
     </div>`;
 }
@@ -2853,87 +2785,6 @@ function imageQueriesFor(place) {
   return uniqueItems([...priorityQueries, ...landmarkQueries, ...fallbackQueries]);
 }
 
-const FOOD_PHOTO_TERMS = {
-  '北京烤鸭': ['Peking duck food', 'Beijing roast duck food'],
-  '炸酱面': ['Zhajiangmian noodles food'],
-  '铜锅涮肉': ['hot pot mutton food Beijing'],
-  '小笼包': ['xiaolongbao food'],
-  '生煎': ['shengjianbao food'],
-  '葱油拌面': ['scallion oil noodles Shanghai food'],
-  '片儿川': ['Pian Er Chuan noodles Hangzhou food'],
-  '龙井虾仁': ['Longjing shrimp Hangzhou food'],
-  '西湖醋鱼': ['West Lake vinegar fish food'],
-  '成都火锅': ['Sichuan hotpot food'],
-  '重庆火锅': ['Chongqing hotpot food'],
-  '担担面': ['Dandan noodles food'],
-  '重庆小面': ['Chongqing noodles food'],
-  '沙茶面': ['satay noodles Xiamen food'],
-  '海蛎煎': ['oyster omelette food'],
-  '肉夹馍': ['roujiamo food'],
-  '羊肉泡馍': ['yangrou paomo food'],
-  '广式早茶': ['dim sum Cantonese food'],
-  '肠粉': ['cheung fun food'],
-  '过桥米线': ['crossing the bridge noodles food'],
-  '鲜花饼': ['Yunnan flower cake food'],
-  '鸭血粉丝汤': ['duck blood vermicelli soup food'],
-  '热干面': ['Hot dry noodles Wuhan food'],
-  '海鲜面': ['seafood noodles food'],
-  '烤海鲜': ['grilled seafood food'],
-  '鱼丸汤': ['fish ball soup food'],
-  '川味火锅': ['Sichuan hotpot food'],
-  '云吞面': ['wonton noodles food'],
-  '江南汤面': ['Chinese noodle soup food'],
-  '牛羊肉面食': ['lanzhou beef noodles food'],
-  '烤肉': ['Chinese lamb skewers food'],
-  '米粉米线': ['rice noodles China food'],
-  '酸汤风味': ['sour soup fish Guizhou food']
-};
-
-function foodImageQueries(food, place) {
-  const cleanName = cleanCityName(place.name);
-  const terms = FOOD_PHOTO_TERMS[food.name] || [];
-  return uniqueItems([
-    ...terms,
-    `${cleanName} ${food.name} 美食`,
-    `${food.name} ${cleanName}`,
-    `${food.name} Chinese food`,
-    `${food.name} Wikimedia Commons`
-  ]);
-}
-
-async function findFoodImage(food, place) {
-  const key = `${cleanCityName(place.name)}-${food.name}`;
-  if (foodImageCache.has(key)) return foodImageCache.get(key);
-
-  for (const query of foodImageQueries(food, place)) {
-    const collected = [];
-    try {
-      collected.push(...await fetchCommonsImages(query));
-    } catch (error) {}
-    if (!collected.length && !FOOD_PHOTO_TERMS[food.name]) {
-      try {
-        collected.push(...await fetchWikiImages(query));
-      } catch (error) {}
-    }
-    const photo = uniqueItems(collected)
-      .find((url) => !/\.svg($|\?)/i.test(url) && !/logo|map|icon/i.test(url));
-    if (photo) {
-      foodImageCache.set(key, photo);
-      return photo;
-    }
-  }
-
-  foodImageCache.set(key, null);
-  return null;
-}
-
-function setFoodImage(index, url) {
-  const card = foodList.querySelector(`[data-food-index="${index}"] .food-illustration`);
-  if (!card || !url) return;
-  card.style.setProperty('--food-photo', `url("${String(url).replace(/"/g, '%22')}")`);
-  card.classList.add('has-photo');
-}
-
 function regionalTravelFor(place) {
   const text = `${place.name || ''}${place.admin1 || ''}`;
   const coastal = /厦门|青岛|舟山|三亚|海口|大连|威海|烟台|珠海|深圳|汕头|北海|防城港|湛江|宁波|福州|泉州|温州|台州|连云港|秦皇岛|日照/i.test(text);
@@ -2997,42 +2848,6 @@ function regionalTravelFor(place) {
   };
 }
 
-function pickSceneryImage(key, pool) {
-  if (!pool.length) return null;
-  const lastImage = lastImageCache.get(key);
-  const highRelevancePool = pool.slice(0, Math.min(pool.length, 8));
-  const choices = highRelevancePool.length > 1 ? highRelevancePool.filter((url) => url !== lastImage) : highRelevancePool;
-  const selected = pickRandom(choices.length ? choices : pool);
-  lastImageCache.set(key, selected);
-  return selected;
-}
-
-async function findSceneryImage(place) {
-  const key = `${place.name}-${place.admin1}`;
-  let pool = imageCache.get(key);
-
-  if (pool) return pickSceneryImage(key, pool);
-
-  const queries = imageQueriesFor(place);
-  const collected = [];
-
-  for (const query of queries) {
-    try {
-      collected.push(...await fetchWikiImages(query));
-    } catch (error) {}
-
-    try {
-      collected.push(...await fetchCommonsImages(query));
-    } catch (error) {}
-
-    if (uniqueItems(collected).length >= 24) break;
-  }
-
-  pool = uniqueItems(collected);
-  imageCache.set(key, pool);
-  return pickSceneryImage(key, pool);
-}
-
 async function selectPlace(place) {
   const normalized = await reverseChinesePlace(place);
   const token = ++placeToken;
@@ -3046,12 +2861,6 @@ async function selectPlace(place) {
     const weatherData = await fetchWeatherData(normalized);
     if (token !== placeToken) return;
     renderWeather(weatherData, normalized, null);
-
-    findSceneryImage(normalized).then((imageUrl) => {
-      if (token !== placeToken || !imageUrl) return;
-      setHeroImage(imageUrl);
-      setBackdropImage(imageUrl);
-    }).catch(() => {});
   } catch (error) {
     if (token !== placeToken) return;
     setError('请检查网络连接，或者换一个更明确的地名。');
@@ -3226,16 +3035,8 @@ function renderWeather(data, place, imageUrl) {
 
   document.title = `${place.name} · Krick's Weather`;
   placeTitle.textContent = place.name;
-  placeLandmark.textContent = profile.landmarks[0];
   placeWeather.textContent = `${info.label} · ${temp}°C`;
   placeCopy.textContent = profile.copy;
-  storyCopy.textContent = profile.copy;
-  storyLandmark.textContent = profile.landmarks.join(' · ');
-  storyMood.textContent = `${profile.mood} · ${info.label}`;
-  storyGeo.textContent = `${Number(place.latitude).toFixed(2)}, ${Number(place.longitude).toFixed(2)}`;
-
-  setHeroImage(imageUrl);
-  setBackdropImage(imageUrl);
 
   weatherPanel.innerHTML = `
     <div class="panel-head">
@@ -3271,7 +3072,6 @@ function renderWeather(data, place, imageUrl) {
   renderForecast(daily);
   renderHourly(data.hourly);
   renderTips(makeTips(data, place));
-  renderFoods(place, data);
 }
 
 function renderForecast(daily) {
@@ -3326,57 +3126,6 @@ function renderTips(tips) {
       </div>
     </div>
   `).join('');
-}
-
-function renderFoods(place, data) {
-  const current = data.current || {};
-  const isRainy = Number(current.precipitation || 0) > 0 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(Number(current.weather_code));
-  const temp = Math.round(current.temperature_2m || 0);
-  const apparent = Math.round(current.apparent_temperature || temp);
-  const wind = Math.round(current.wind_speed_10m || 0);
-  const humidity = Math.round(current.relative_humidity_2m || 0);
-  const isNight = current.is_day === 0;
-  const context = isRainy
-    ? { tag: 'rain', label: '雨天本地味' }
-    : apparent >= 32
-      ? { tag: 'heat', label: '热天本地味' }
-      : temp <= 10
-        ? { tag: 'cold', label: '冷天本地味' }
-        : wind >= 24
-          ? { tag: 'wind', label: '风天本地味' }
-          : isNight
-            ? { tag: 'night', label: '夜间本地味' }
-            : humidity >= 80
-              ? { tag: 'humid', label: '湿润本地味' }
-              : { tag: 'classic', label: '城市代表味' };
-  const foods = foodsFor(place);
-  const ordered = foods
-    .map((food, index) => ({
-      ...food,
-      score: (food.tags || []).includes(context.tag) ? 4 : (food.tags || []).includes('classic') ? 2 : 1,
-      index
-    }))
-    .sort((a, b) => b.score - a.score || a.index - b.index)
-    .slice(0, 3);
-
-  foodList.innerHTML = ordered.map((food, index) => {
-    const weatherNote = index === 0 ? context.label : '当地特色';
-    return `
-      <div class="food-card" data-food-index="${index}" style="--food-color:${escapeHTML(food.color)}; --food-tint:${escapeHTML(food.color)}22;">
-        <div class="food-illustration" aria-hidden="true">${escapeHTML(food.icon)}</div>
-        <div>
-          <span>${escapeHTML(weatherNote)}</span>
-          <strong>${escapeHTML(food.name)}</strong>
-          <p>${escapeHTML(food.note)}</p>
-        </div>
-      </div>`;
-  }).join('');
-
-  ordered.forEach((food, index) => {
-    findFoodImage(food, place)
-      .then((url) => setFoodImage(index, url))
-      .catch(() => {});
-  });
 }
 
 searchInput.addEventListener('input', () => {
