@@ -216,6 +216,8 @@
 
   .hero-copy-panel {
     position: relative;
+    --expand-progress: 0;
+    --scroll-offset: 0px;
     min-height: min(720px, calc(100vh - 148px));
     padding: clamp(240px, 35vh, 340px) clamp(30px, 5vw, 58px) clamp(30px, 5vw, 58px);
     overflow: hidden;
@@ -245,7 +247,7 @@
       radial-gradient(circle at 50% 24%, rgba(0, 216, 255, 0.16), transparent 44%);
   }
 
-  .hero-copy-panel > :not(.holo-stage) {
+  .hero-copy-panel > :not(.holo-stage):not(.scroll-expansion-media) {
     position: relative;
     z-index: 1;
   }
@@ -261,6 +263,105 @@
     width: 100%;
     height: 100%;
     display: block;
+  }
+
+  .scroll-expansion-media {
+    position: absolute;
+    top: calc(clamp(28px, 5vh, 44px) + var(--scroll-offset));
+    left: 50%;
+    z-index: 1;
+    width: min(calc(300px + (var(--expand-progress) * 560px)), 92vw);
+    height: min(calc(210px + (var(--expand-progress) * 260px)), 56vh);
+    overflow: hidden;
+    border-radius: calc(20px + (var(--expand-progress) * 12px));
+    border: 1px solid rgba(255, 255, 255, 0.30);
+    background:
+      linear-gradient(135deg, rgba(173, 215, 235, 0.86), rgba(80, 136, 172, 0.72)),
+      url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=82");
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 26px 70px rgba(0, 25, 66, calc(0.22 + (var(--expand-progress) * 0.16)));
+    transform: translateX(-50%) translateY(calc(var(--expand-progress) * -8px));
+    transition: width 120ms linear, height 120ms linear, border-radius 120ms linear, box-shadow 120ms linear, transform 120ms linear;
+  }
+
+  .scroll-expansion-media img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transform: scale(calc(1.08 - (var(--expand-progress) * 0.04)));
+    filter: saturate(1.04) contrast(1.03);
+  }
+
+  .scroll-expansion-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(3, 10, 30, 0.08), rgba(3, 10, 30, 0.42)),
+      radial-gradient(circle at 50% 16%, rgba(126, 213, 255, 0.22), transparent 52%);
+    pointer-events: none;
+  }
+
+  .scroll-expansion-label {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 16px;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    color: #fff;
+    text-align: left;
+  }
+
+  .scroll-expansion-label strong {
+    display: block;
+    font-size: clamp(18px, 2.6vw, 30px);
+    line-height: 1.05;
+    letter-spacing: 0;
+  }
+
+  .scroll-expansion-label span {
+    display: block;
+    margin-top: 6px;
+    color: rgba(255, 255, 255, 0.76);
+    font-size: 12px;
+  }
+
+  .scroll-expansion-cue {
+    flex: 0 0 auto;
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 13px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    backdrop-filter: blur(16px);
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .expand-hero .holo-stage {
+    opacity: calc(0.42 + (var(--expand-progress) * 0.30));
+    transform: scale(calc(0.98 + (var(--expand-progress) * 0.05)));
+    transition: opacity 120ms linear, transform 120ms linear;
+  }
+
+  .expand-hero .hero-title,
+  .expand-hero .hero-text,
+  .expand-hero .search-wrap,
+  .expand-hero .quick-row,
+  .expand-hero .search-note,
+  .expand-hero .eyebrow {
+    transform: translateY(calc(var(--expand-progress) * 18px));
+    transition: transform 120ms linear;
   }
 
   .hero-copy-panel .eyebrow {
@@ -1197,6 +1298,7 @@
 
   .search-view.active {
     display: grid;
+    padding-bottom: clamp(90px, 18vh, 190px);
   }
 
   .brand-mark {
@@ -1213,6 +1315,10 @@
       linear-gradient(145deg, #eef8fd, #d8edf8);
     color: var(--ink);
     box-shadow: 0 28px 74px rgba(80, 126, 154, 0.18);
+  }
+
+  .expand-hero {
+    padding-top: clamp(250px, 32vh, 310px);
   }
 
   .hero-copy-panel::after {
@@ -1441,6 +1547,19 @@
       padding-top: clamp(210px, 44vh, 300px);
     }
 
+    .hero-copy-panel.expand-hero {
+      padding-top: clamp(310px, 56vh, 420px);
+    }
+
+    .scroll-expansion-label {
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 10px;
+    }
+
     .weather-icon,
     .forecast-icon,
     .mini-weather-icon,
@@ -1474,9 +1593,19 @@
 
   <section class="view search-view active" id="searchView">
     <div class="hero-grid">
-      <section class="hero-copy-panel" aria-labelledby="searchTitle">
+      <section class="hero-copy-panel expand-hero" id="scrollExpandHero" aria-labelledby="searchTitle">
         <div class="holo-stage" aria-hidden="true">
           <canvas id="holoEarth"></canvas>
+        </div>
+        <div class="scroll-expansion-media" aria-hidden="true">
+          <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=82" alt="" onerror="this.style.display='none'">
+          <div class="scroll-expansion-label">
+            <div>
+              <strong>Weather in motion</strong>
+              <span>滚动展开城市天气视野</span>
+            </div>
+            <div class="scroll-expansion-cue">向下滚动</div>
+          </div>
         </div>
         <p class="eyebrow" id="heroEyebrow">Krick's Weather</p>
         <h2 class="hero-title" id="searchTitle">先问一座城，<span>再看它的天气。</span></h2>
@@ -1557,6 +1686,7 @@ const clearBtn = $('clearBtn');
 const suggestions = $('suggestions');
 const quickRow = $('quickRow');
 const holoEarthCanvas = $('holoEarth');
+const scrollExpandHero = $('scrollExpandHero');
 const heroEyebrow = $('heroEyebrow');
 const searchTitle = $('searchTitle');
 const heroText = $('heroText');
@@ -2045,6 +2175,13 @@ function renderEntryCopy() {
   searchNote.textContent = copy.note;
 }
 
+function updateScrollExpansion() {
+  if (!scrollExpandHero || !searchView.classList.contains('active')) return;
+  const progress = Math.min(Math.max(window.scrollY / 520, 0), 1);
+  scrollExpandHero.style.setProperty('--expand-progress', progress.toFixed(3));
+  scrollExpandHero.style.setProperty('--scroll-offset', `${Math.max(window.scrollY, 0)}px`);
+}
+
 function startHolographicEarth() {
   const canvas = holoEarthCanvas;
   if (!canvas) return;
@@ -2435,6 +2572,8 @@ function showSearchView() {
   backBtn.classList.remove('visible');
   document.title = "Krick's Weather";
   backdrop.style.setProperty('--place-opacity', '0');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  updateScrollExpansion();
 }
 
 function showDetailView() {
@@ -3205,6 +3344,8 @@ clearBtn.addEventListener('click', () => {
 });
 
 backBtn.addEventListener('click', showSearchView);
+window.addEventListener('scroll', updateScrollExpansion, { passive: true });
+window.addEventListener('resize', updateScrollExpansion);
 
 document.addEventListener('click', (event) => {
   const jump = event.target.closest('[data-scroll-target]');
@@ -3221,6 +3362,7 @@ renderQuickCities();
 startHolographicEarth();
 setInterval(updateClock, 30000);
 showSearchView();
+updateScrollExpansion();
 </script>
 </body>
 </html>
